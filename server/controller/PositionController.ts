@@ -1,6 +1,7 @@
 import { nanoid } from "nanoid";
 import { z } from "zod";
 import { TRPCInstance } from "..";
+import { Position } from "../constants/types";
 
 const positions: Position[] = [];
 
@@ -30,19 +31,10 @@ export default class PositionController {
       .input(createPositionRequest)
       .mutation(async ({ input }): Promise<CreatePositionResponse> => {
         const id = nanoid();
-        positions.push({ ...input, id });
+        positions.push({ ...input, id, type: "raw" });
         return { id: "id" };
       });
   }
-}
-
-export interface PositionInsertObject {
-  url: string;
-  description: string;
-}
-
-export interface Position extends PositionInsertObject {
-  id: string;
 }
 
 export type CreatePositionResponse = {
