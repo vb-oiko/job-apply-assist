@@ -1,6 +1,7 @@
 import { trpc } from "../utils/trpc";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { Box } from "@mui/material";
+import { DataGrid, GridColDef, GridRowIdGetter } from "@mui/x-data-grid";
+
+const getRowId: GridRowIdGetter = (row) => row._id;
 
 export const PositionList = () => {
   const { data } = trpc.listPositions.useQuery({});
@@ -16,5 +17,12 @@ export const PositionList = () => {
     { field: "description", headerName: "Description", flex: 3 },
   ];
 
-  return <DataGrid autoHeight rows={positions} columns={columns} />;
+  return (
+    <DataGrid
+      autoHeight
+      rows={positions}
+      columns={columns}
+      getRowId={getRowId}
+    />
+  );
 };

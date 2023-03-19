@@ -1,6 +1,7 @@
 import { nanoid } from "nanoid";
 import { z } from "zod";
 import { TRPCInstance } from "..";
+import { PositionCollection } from "../collection/PositionCollection";
 import { Position } from "../constants/types";
 
 const positions: Position[] = [];
@@ -16,13 +17,16 @@ export const createPositionRequest = z.object({
 });
 
 export default class PositionController {
-  constructor(private readonly trpcInstance: TRPCInstance) {}
+  constructor(
+    private readonly trpcInstance: TRPCInstance,
+    private readonly positionCollection: PositionCollection
+  ) {}
 
   listPositions() {
     return this.trpcInstance.procedure
       .input(listPositionsRequest)
       .query(async ({ input }): Promise<ListPositionsResponse> => {
-        return { positions };
+        return { positions: await this.positionCollection.listAll() };
       });
   }
 
@@ -30,9 +34,11 @@ export default class PositionController {
     return this.trpcInstance.procedure
       .input(createPositionRequest)
       .mutation(async ({ input }): Promise<CreatePositionResponse> => {
-        const id = nanoid();
-        positions.push({ ...input, id, type: "raw" });
-        return { id: "id" };
+        const id = await this.positionCollection.insert({
+          ...input,
+          type: "raw",
+        });
+        return { id };
       });
   }
 }
