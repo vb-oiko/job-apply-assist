@@ -1,6 +1,12 @@
 import { trpc } from "../utils/trpc";
-import { DataGrid, GridColDef, GridRowIdGetter } from "@mui/x-data-grid";
-
+import {
+  DataGrid,
+  GridActionsCellItem,
+  GridColDef,
+  GridRowIdGetter,
+} from "@mui/x-data-grid";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 const getRowId: GridRowIdGetter = (row) => row._id;
 
 export const PromptList = () => {
@@ -24,9 +30,31 @@ export const PromptList = () => {
       headerName: "Prompt",
       flex: 3,
     },
+    {
+      field: "actions",
+      type: "actions",
+      width: 120,
+      getActions: (params) => [
+        <GridActionsCellItem icon={<EditIcon />} label="Toggle Admin" />,
+        <GridActionsCellItem icon={<DeleteIcon />} label="Delete" />,
+      ],
+    },
   ];
 
   return (
-    <DataGrid autoHeight rows={prompts} columns={columns} getRowId={getRowId} />
+    <>
+      <DataGrid
+        autoHeight
+        rows={prompts}
+        columns={columns}
+        getRowId={getRowId}
+        rowSelection={false}
+        sx={{
+          "&.MuiDataGrid-root .MuiDataGrid-cell:focus-within": {
+            outline: "none !important",
+          },
+        }}
+      />
+    </>
   );
 };

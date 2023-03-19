@@ -17,19 +17,21 @@ export interface AddPromptFormProps {
   promptTypes: PromptType[];
   onCancel: () => void;
   onSubmit: (prompt: PromptInsertObject) => void;
+  values?: Partial<PromptInsertObject>;
 }
 
 export const AddPromptForm: React.FC<AddPromptFormProps> = ({
   onCancel,
   onSubmit,
   promptTypes,
+  values,
 }) => {
   const [formData, setFormData] = React.useState<{
     type: PromptType | "";
     prompt: string;
   }>({
-    type: "",
-    prompt: "",
+    type: values?.type || "",
+    prompt: values?.prompt || "",
   });
 
   const handleClose = () => {
