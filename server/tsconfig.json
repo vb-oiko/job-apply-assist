@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "module": "es2022",
+    "target": "es2022",
+    "noImplicitAny": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "strict": true,
+    "outDir": "dist"
+  }
+}
