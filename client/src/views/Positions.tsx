@@ -1,17 +1,11 @@
-import Button from "@mui/material/Button";
-import AddIcon from "@mui/icons-material/Add";
-import Paper from "@mui/material/Paper";
 import { Box } from "@mui/material";
 import { PositionList } from "../components/PositionList";
+import { AddPositionButton } from "../components/AddPositionButton";
 
 export const Positions = () => (
   <Box py={2}>
-    <Button variant="outlined" startIcon={<AddIcon />}>
-      Add position
-    </Button>
-
+    <AddPositionButton />
     <Box mb={2}></Box>
-
     <PositionList />
   </Box>
 );
