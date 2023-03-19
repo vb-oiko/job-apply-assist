@@ -13,8 +13,17 @@ export const PromptList = () => {
   const { prompts } = data;
 
   const columns: GridColDef[] = [
-    { field: "type", headerName: "Type", flex: 1 },
-    { field: "prompt", headerName: "Prompt", flex: 3 },
+    {
+      field: "type",
+      headerName: "Type",
+      flex: 1,
+      renderCell: (value) => value.row.type.replaceAll("_", " "),
+    },
+    {
+      field: "prompt",
+      headerName: "Prompt",
+      flex: 3,
+    },
   ];
 
   return (
