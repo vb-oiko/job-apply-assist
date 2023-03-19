@@ -11,6 +11,7 @@ import { useState } from "react";
 import { trpc } from "./utils/trpc";
 import { Positions } from "./views/Positions";
 import { Routes, Route, Outlet, Link as RouterLink } from "react-router-dom";
+import { Prompts } from "./views/Prompts";
 
 export function App() {
   const [queryClient] = useState(() => new QueryClient());
@@ -31,6 +32,7 @@ export function App() {
           <Route path="/" element={<Layout />}>
             <Route index element={<Positions />} />
             <Route path="positions" element={<Positions />} />
+            <Route path="prompts" element={<Prompts />} />
             <Route path="*" element={<NoMatch />} />
           </Route>
         </Routes>
@@ -61,6 +63,14 @@ const Layout = () => {
                   to="/"
                 >
                   Positions
+                </Button>
+                <Button
+                  color="inherit"
+                  variant="text"
+                  component={RouterLink}
+                  to="prompts"
+                >
+                  Prompts
                 </Button>
               </Stack>
             </Toolbar>

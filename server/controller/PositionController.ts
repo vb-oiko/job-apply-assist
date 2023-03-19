@@ -1,10 +1,7 @@
-import { nanoid } from "nanoid";
 import { z } from "zod";
 import { TRPCInstance } from "..";
 import { PositionCollection } from "../collection/PositionCollection";
 import { Position } from "../constants/types";
-
-const positions: Position[] = [];
 
 export const listPositionsRequest = z.object({
   offset: z.number().optional(),

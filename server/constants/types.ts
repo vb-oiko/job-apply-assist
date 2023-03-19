@@ -1,4 +1,7 @@
-export type RawPositionInsertObject = Omit<RawPosition, "_id" | "created">;
+export type RawPositionInsertObject = Omit<
+  RawPosition,
+  "_id" | "created" | "type"
+>;
 
 export type Position = RawPosition | ParsedPosition | GeneratedPosition;
 
@@ -24,7 +27,7 @@ export interface GeneratedPosition extends Omit<ParsedPosition, "type"> {
   type: "generated";
 }
 
-const PROMPTS = [
+export const PROMPTS = [
   "generate_cover_letter",
   "extract_job_title_and_position",
   "get_matching_points",

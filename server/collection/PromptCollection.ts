@@ -12,11 +12,15 @@ export class PromptCollection {
       .collection<Prompt>(COLLECTIONS.prompts);
   }
 
+  public async listAll(): Promise<Prompt[]> {
+    return await this.collection.find({}).toArray();
+  }
+
   public async getMostRecent(type: PromptType): Promise<Prompt> {
     const prompt = await this.collection.findOne({ type });
 
     if (!prompt) {
-      throw new Error("Not implemented");
+      throw new Error(`Prompt not found, type: ${type}`);
     }
 
     return prompt;

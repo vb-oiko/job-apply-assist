@@ -3,7 +3,7 @@ import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import React from "react";
-import { PositionInsertObject } from "../../../server/controller/PositionController";
+import { RawPositionInsertObject } from "../../../server/constants/types";
 import { trpc } from "../utils/trpc";
 import { AddPositionForm } from "./AddPositionForm";
 
@@ -25,7 +25,7 @@ export const AddPositionButton = () => {
     },
   });
 
-  const handleSubmit = (position: PositionInsertObject) => {
+  const handleSubmit = (position: RawPositionInsertObject) => {
     createReport.mutate(position);
     setOpen(false);
   };

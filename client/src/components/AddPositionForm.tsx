@@ -4,18 +4,18 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import TextField from "@mui/material/TextField";
 import React from "react";
-import { PositionInsertObject } from "../../../server/controller/PositionController";
+import { RawPositionInsertObject } from "../../../server/constants/types";
 
 export interface AddPositionFormProps {
   onCancel: () => void;
-  onSubmit: (position: PositionInsertObject) => void;
+  onSubmit: (position: RawPositionInsertObject) => void;
 }
 
 export const AddPositionForm: React.FC<AddPositionFormProps> = ({
   onCancel,
   onSubmit,
 }) => {
-  const [formData, setFormData] = React.useState<PositionInsertObject>({
+  const [formData, setFormData] = React.useState<RawPositionInsertObject>({
     url: "",
     description: "",
   });
