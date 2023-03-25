@@ -1,27 +1,23 @@
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import Select, { SelectChangeEvent } from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
 import React from "react";
 import {
   PromptInsertObject,
   PromptType,
 } from "../../../server/constants/types";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import FormControl from "@mui/material/FormControl";
-import Select, { SelectChangeEvent } from "@mui/material/Select";
 
-export interface AddPromptFormProps {
+export interface PromptFormProps {
   promptTypes: PromptType[];
-  onCancel: () => void;
   onSubmit: (prompt: PromptInsertObject) => void;
   values?: Partial<PromptInsertObject>;
 }
 
-export const AddPromptForm: React.FC<AddPromptFormProps> = ({
-  onCancel,
+export const PromptForm: React.FC<PromptFormProps> = ({
   onSubmit,
   promptTypes,
   values,
@@ -33,10 +29,6 @@ export const AddPromptForm: React.FC<AddPromptFormProps> = ({
     type: values?.type || "",
     prompt: values?.prompt || "",
   });
-
-  const handleClose = () => {
-    onCancel();
-  };
 
   const handleSubmit = () => {
     const { prompt, type } = formData;
@@ -57,9 +49,7 @@ export const AddPromptForm: React.FC<AddPromptFormProps> = ({
 
   return (
     <>
-      <DialogContent>
-        <Box mb={1}></Box>
-
+      <Box maxWidth="20rem" mb={1}>
         <FormControl fullWidth>
           <InputLabel id="type-label">Type</InputLabel>
           <Select
@@ -76,33 +66,28 @@ export const AddPromptForm: React.FC<AddPromptFormProps> = ({
             ))}
           </Select>
         </FormControl>
+      </Box>
 
-        <Box mb={1}></Box>
+      <TextField
+        required
+        id="prompt"
+        name="prompt"
+        label="Prompt"
+        multiline
+        rows={10}
+        fullWidth
+        onChange={handleChange}
+      />
 
-        <TextField
-          required
-          id="prompt"
-          name="prompt"
-          label="Prompt"
-          multiline
-          rows={10}
-          fullWidth
-          onChange={handleChange}
-        />
-      </DialogContent>
+      <Box mb={1}></Box>
 
-      <DialogActions>
-        <Button onClick={handleClose} variant="outlined">
-          Cancel
-        </Button>
-        <Button
-          onClick={handleSubmit}
-          variant="outlined"
-          disabled={!formData.type || !formData.prompt}
-        >
-          Add prompt
-        </Button>
-      </DialogActions>
+      <Button
+        onClick={handleSubmit}
+        variant="contained"
+        disabled={!formData.type || !formData.prompt}
+      >
+        Save
+      </Button>
     </>
   );
 };

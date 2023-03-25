@@ -42,7 +42,7 @@ export default class PromptController {
     return this.trpcInstance.procedure
       .input(getPromptTypesRequest)
       .query(async (): Promise<GetPromptTypesResponse> => {
-        return { promptTypes: PROMPTS };
+        return PROMPTS;
       });
   }
 }
@@ -55,6 +55,4 @@ export type ListPromptsResponse = {
   prompts: Prompt[];
 };
 
-export type GetPromptTypesResponse = {
-  promptTypes: typeof PROMPTS;
-};
+export type GetPromptTypesResponse = typeof PROMPTS;

@@ -1,7 +1,4 @@
-export type RawPositionInsertObject = Omit<
-  RawPosition,
-  "_id" | "created" | "type"
->;
+export type RawPositionInsertObject = Omit<RawPosition, "_id" | "created">;
 
 export type Position = RawPosition | ParsedPosition | GeneratedPosition;
 

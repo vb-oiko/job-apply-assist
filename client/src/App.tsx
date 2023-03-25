@@ -8,6 +8,7 @@ import { trpc } from "./utils/trpc";
 import { PositionCreate } from "./views/PositionCreate";
 import { PositionEdit } from "./views/PositionEdit";
 import { Positions } from "./views/Positions";
+import { PromptCreate } from "./views/PromptCreate";
 import { Prompts } from "./views/Prompts";
 
 export function App() {
@@ -32,6 +33,7 @@ export function App() {
             <Route path="positions/create" element={<PositionCreate />} />
             <Route path="positions/:id" element={<PositionEdit />} />
             <Route path="prompts" element={<Prompts />} />
+            <Route path="prompts/create" element={<PromptCreate />} />
             <Route path="*" element={<NoMatch />} />
           </Route>
         </Routes>
