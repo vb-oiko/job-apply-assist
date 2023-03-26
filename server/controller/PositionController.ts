@@ -1,28 +1,11 @@
 import { z } from "zod";
 import { TRPCInstance } from "..";
 import { PositionCollection } from "../collection/PositionCollection";
-import { Position } from "../constants/types";
-
-export const listPositionsRequest = z.object({
-  offset: z.number().optional(),
-  limit: z.number().optional(),
-});
-
-export const createPositionRequest = z.object({
-  url: z.string(),
-  description: z.string(),
-});
-
-export const updatePositionRequest = z.discriminatedUnion("type", [
-  z.object({
-    id: z.string(),
-    type: z.literal("raw"),
-    url: z.string(),
-    description: z.string(),
-  }),
-]);
-
-export const deletePositionRequest = z.string();
+import {
+  Position,
+  PositionUpdateObject,
+  RawPositionInsertObject,
+} from "../constants/types";
 
 export default class PositionController {
   constructor(
@@ -32,26 +15,23 @@ export default class PositionController {
 
   listPositions() {
     return this.trpcInstance.procedure
-      .input(listPositionsRequest)
-      .query(async ({ input }): Promise<Position[]> => {
+      .input(z.object({}))
+      .query(async (): Promise<Position[]> => {
         return await this.positionCollection.listAll();
       });
   }
 
   createPosition() {
     return this.trpcInstance.procedure
-      .input(createPositionRequest)
+      .input(RawPositionInsertObject)
       .mutation(async ({ input }): Promise<string> => {
-        return await this.positionCollection.insert({
-          ...input,
-          type: "raw",
-        });
+        return await this.positionCollection.insert(input);
       });
   }
 
   deletePosition() {
     return this.trpcInstance.procedure
-      .input(deletePositionRequest)
+      .input(z.string())
       .mutation(async ({ input }): Promise<void> => {
         await this.positionCollection.delete(input);
       });
@@ -59,10 +39,9 @@ export default class PositionController {
 
   updatePosition() {
     return this.trpcInstance.procedure
-      .input(updatePositionRequest)
+      .input(PositionUpdateObject)
       .mutation(async ({ input }): Promise<void> => {
-        const { id, ...rest } = input;
-        await this.positionCollection.update(input.id, rest);
+        await this.positionCollection.update(input);
       });
   }
 }

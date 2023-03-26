@@ -1,7 +1,11 @@
 import { Collection, MongoClient } from "mongodb";
 import { nanoid } from "nanoid";
 import { COLLECTIONS, DB_NAME } from "../constants/constants";
-import { Position, RawPositionInsertObject } from "../constants/types";
+import {
+  Position,
+  PositionUpdateObject,
+  RawPositionInsertObject,
+} from "../constants/types";
 
 export class PositionCollection {
   private collection: Collection<Position>;
@@ -30,7 +34,8 @@ export class PositionCollection {
     return this.collection.findOne({ _id: id });
   }
 
-  public async update(id: string, position: RawPositionInsertObject) {
+  public async update(position: PositionUpdateObject) {
+    const { _id: id, ...rest } = position;
     await this.collection.updateOne({ _id: id }, { $set: position });
   }
 

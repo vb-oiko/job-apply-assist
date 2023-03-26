@@ -31,6 +31,7 @@ const appRouter = router({
   listPositions: positionController.listPositions(),
   createPosition: positionController.createPosition(),
   deletePosition: positionController.deletePosition(),
+  updatePosition: positionController.updatePosition(),
   listPrompts: promptController.listPrompts(),
   createPrompt: promptController.createPrompt(),
   getPromptTypes: promptController.getPromptTypes(),
