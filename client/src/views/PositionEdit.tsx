@@ -8,10 +8,17 @@ export const PositionEdit = () => {
   const { id } = useParams();
   const utils = trpc.useContext();
   const navigate = useNavigate();
+
   const updatePosition = trpc.updatePosition.useMutation({
     onSuccess: () => {
       utils.listPositions.invalidate();
       navigate("/positions");
+    },
+  });
+
+  const regeneratePosition = trpc.parsePosition.useMutation({
+    onSuccess: () => {
+      navigate(`/positions/${id}`);
     },
   });
 
@@ -26,6 +33,10 @@ export const PositionEdit = () => {
     });
   };
 
+  const handleRegenerate = () => {
+    regeneratePosition.mutate(id);
+  };
+
   const { data: position } = trpc.getPosition.useQuery(id);
 
   if (!position) {
@@ -35,6 +46,11 @@ export const PositionEdit = () => {
   const { _id, type, created, ...rest } = position;
 
   return (
-    <PositionForm onSubmit={handleSubmit} type={type} initialValues={rest} />
+    <PositionForm
+      onSubmit={handleSubmit}
+      type={type}
+      initialValues={rest}
+      onRegenerate={handleRegenerate}
+    />
   );
 };

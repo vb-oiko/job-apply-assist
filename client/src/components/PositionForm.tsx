@@ -1,3 +1,4 @@
+import { Grid } from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -10,7 +11,7 @@ import {
 export type PositionFormData = {
   url?: string;
   description?: string;
-  position?: string;
+  title?: string;
   company?: string;
   reasons?: string;
   matchingPoints?: string;
@@ -18,6 +19,7 @@ export type PositionFormData = {
 
 export interface PositionFormProps {
   onSubmit: (position: PositionUpdateObject) => void;
+  onRegenerate?: () => void;
   initialValues?: PositionFormData;
   type: PositionType;
 }
@@ -25,12 +27,13 @@ export interface PositionFormProps {
 export const PositionForm: React.FC<PositionFormProps> = ({
   onSubmit,
   initialValues,
+  onRegenerate,
   type,
 }) => {
   const [formData, setFormData] = React.useState<PositionFormData>({
     url: initialValues?.url || "",
     description: initialValues?.description || "",
-    position: initialValues?.position || "",
+    title: initialValues?.title || "",
     company: initialValues?.company || "",
     reasons: initialValues?.reasons || "",
     matchingPoints: initialValues?.matchingPoints || "",
@@ -71,7 +74,7 @@ export const PositionForm: React.FC<PositionFormProps> = ({
         onChange={handleChange}
       />
 
-      <Box mb={1}></Box>
+      <Box mb={2}></Box>
 
       <TextField
         required
@@ -85,20 +88,51 @@ export const PositionForm: React.FC<PositionFormProps> = ({
         onChange={handleChange}
       />
 
-      {type === "parsed" || type === "generated" ? (
+      {initialValues && onRegenerate ? (
         <>
-          <TextField
-            required
-            id="position"
-            name="position"
-            label="Position"
-            fullWidth
-            onChange={handleChange}
-          />
+          <Box mb={2}></Box>
+
+          <Button
+            onClick={onRegenerate}
+            variant="outlined"
+            disabled={!formData.url || !formData.description}
+          >
+            Regenerate
+          </Button>
         </>
       ) : null}
 
-      <Box mb={1}></Box>
+      {type === "parsed" || type === "generated" ? (
+        <>
+          <Box mb={2}></Box>
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <TextField
+                required
+                id="title"
+                name="title"
+                label="Title"
+                fullWidth
+                value={formData.title}
+                onChange={handleChange}
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <TextField
+                required
+                id="company"
+                name="company"
+                label="Company"
+                fullWidth
+                value={formData.company}
+                onChange={handleChange}
+              />
+            </Grid>
+          </Grid>
+        </>
+      ) : null}
+
+      <Box mb={2}></Box>
 
       <Button
         onClick={handleSubmit}
