@@ -1,13 +1,8 @@
-import { trpc } from "../utils/trpc";
-import {
-  DataGrid,
-  GridActionsCellItem,
-  GridColDef,
-  GridRowIdGetter,
-} from "@mui/x-data-grid";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-const getRowId: GridRowIdGetter = (row) => row._id;
+import { DataGrid, GridActionsCellItem, GridColDef } from "@mui/x-data-grid";
+import { getRowId } from "../utils/getRowId";
+import { trpc } from "../utils/trpc";
 
 export const PromptList = () => {
   const { data } = trpc.listPrompts.useQuery({});
@@ -35,7 +30,13 @@ export const PromptList = () => {
       type: "actions",
       width: 120,
       getActions: (params) => [
-        <GridActionsCellItem icon={<EditIcon />} label="Toggle Admin" />,
+        <GridActionsCellItem
+          icon={<EditIcon />}
+          label="Edit"
+          onClick={() => {
+            console.log(params);
+          }}
+        />,
         <GridActionsCellItem icon={<DeleteIcon />} label="Delete" />,
       ],
     },

@@ -25,4 +25,16 @@ export class PositionCollection {
 
     return result.insertedId;
   }
+
+  public async getById(id: string): Promise<Position | null> {
+    return this.collection.findOne({ _id: id });
+  }
+
+  public async update(id: string, position: RawPositionInsertObject) {
+    await this.collection.updateOne({ _id: id }, { $set: position });
+  }
+
+  public async delete(id: string) {
+    await this.collection.deleteOne({ _id: id });
+  }
 }

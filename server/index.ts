@@ -30,6 +30,7 @@ const router = trpcInstance.router;
 const appRouter = router({
   listPositions: positionController.listPositions(),
   createPosition: positionController.createPosition(),
+  deletePosition: positionController.deletePosition(),
   listPrompts: promptController.listPrompts(),
   createPrompt: promptController.createPrompt(),
   getPromptTypes: promptController.getPromptTypes(),

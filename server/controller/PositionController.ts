@@ -13,6 +13,17 @@ export const createPositionRequest = z.object({
   description: z.string(),
 });
 
+export const updatePositionRequest = z.discriminatedUnion("type", [
+  z.object({
+    type: z.literal("raw"),
+    id: z.string(),
+    url: z.string(),
+    description: z.string(),
+  }),
+]);
+
+export const deletePositionRequest = z.string();
+
 export default class PositionController {
   constructor(
     private readonly trpcInstance: TRPCInstance,
@@ -22,28 +33,36 @@ export default class PositionController {
   listPositions() {
     return this.trpcInstance.procedure
       .input(listPositionsRequest)
-      .query(async ({ input }): Promise<ListPositionsResponse> => {
-        return { positions: await this.positionCollection.listAll() };
+      .query(async ({ input }): Promise<Position[]> => {
+        return await this.positionCollection.listAll();
       });
   }
 
   createPosition() {
     return this.trpcInstance.procedure
       .input(createPositionRequest)
-      .mutation(async ({ input }): Promise<CreatePositionResponse> => {
-        const id = await this.positionCollection.insert({
+      .mutation(async ({ input }): Promise<string> => {
+        return await this.positionCollection.insert({
           ...input,
           type: "raw",
         });
-        return { id };
+      });
+  }
+
+  deletePosition() {
+    return this.trpcInstance.procedure
+      .input(deletePositionRequest)
+      .mutation(async ({ input }): Promise<void> => {
+        await this.positionCollection.delete(input);
+      });
+  }
+
+  updatePosition() {
+    return this.trpcInstance.procedure
+      .input(updatePositionRequest)
+      .mutation(async ({ input }): Promise<void> => {
+        const { id, ...rest } = input;
+        await this.positionCollection.update(input.id, rest);
       });
   }
 }
-
-export type CreatePositionResponse = {
-  id: string;
-};
-
-export type ListPositionsResponse = {
-  positions: Position[];
-};

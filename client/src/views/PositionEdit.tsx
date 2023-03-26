@@ -1,11 +1,10 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { NoMatch } from "../components/NoMatch";
 
 export const PositionEdit = () => {
-  const { id: idParam } = useParams();
-  const id = idParam ? parseInt(idParam) : null;
+  const { id } = useParams();
 
-  if (!id || Number.isNaN(id)) {
+  if (!id) {
     return <NoMatch />;
   }
 
