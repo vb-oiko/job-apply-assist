@@ -14,7 +14,7 @@ export type ParsedPosition = z.infer<typeof ParsedPosition>;
 
 export const ParsedPosition = RawPosition.merge(
   z.object({
-    position: z.string(),
+    title: z.string(),
     company: z.string(),
     reasons: z.string(),
     matchingPoints: z.string(),

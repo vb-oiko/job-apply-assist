@@ -13,11 +13,14 @@ export class PromptCollection {
   }
 
   public async listAll(): Promise<Prompt[]> {
-    return await this.collection.find({}).toArray();
+    return await this.collection.find({}, { sort: { created: -1 } }).toArray();
   }
 
   public async getMostRecent(type: PromptType): Promise<Prompt> {
-    const prompt = await this.collection.findOne({ type });
+    const prompt = await this.collection.findOne(
+      { type },
+      { sort: { created: -1 } }
+    );
 
     if (!prompt) {
       throw new Error(`Prompt not found, type: ${type}`);

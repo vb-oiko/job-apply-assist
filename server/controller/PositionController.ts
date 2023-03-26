@@ -6,11 +6,13 @@ import {
   PositionUpdateObject,
   RawPositionInsertObject,
 } from "../constants/types";
+import { PositionService } from "../service/PositionService";
 
 export default class PositionController {
   constructor(
     private readonly trpcInstance: TRPCInstance,
-    private readonly positionCollection: PositionCollection
+    private readonly positionCollection: PositionCollection,
+    private readonly positionService: PositionService
   ) {}
 
   list() {
@@ -50,6 +52,14 @@ export default class PositionController {
       .input(z.string())
       .query(async ({ input }): Promise<Position | null> => {
         return this.positionCollection.getById(input);
+      });
+  }
+
+  parse() {
+    return this.trpcInstance.procedure
+      .input(z.string())
+      .mutation(async ({ input }): Promise<void> => {
+        await this.positionService.parse(input);
       });
   }
 }

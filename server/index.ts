@@ -1,12 +1,15 @@
 import { initTRPC } from "@trpc/server";
 import * as dotenv from "dotenv";
-import { createServer } from "./utils/createServer";
+import { MongoClient, ServerApiVersion } from "mongodb";
+import { Configuration, OpenAIApi } from "openai";
+import { PositionCollection } from "./collection/PositionCollection";
+import { PromptCollection } from "./collection/PromptCollection";
 import { SERVER_PORT } from "./constants/constants";
 import PositionController from "./controller/PositionController";
-import { MongoClient, ServerApiVersion } from "mongodb";
-import { PositionCollection } from "./collection/PositionCollection";
 import PromptController from "./controller/PromptController";
-import { PromptCollection } from "./collection/PromptCollection";
+import { AiService } from "./service/AiService";
+import { PositionService } from "./service/PositionService";
+import { createServer } from "./utils/createServer";
 
 dotenv.config();
 
@@ -17,11 +20,20 @@ mongoClient.connect();
 const positionCollection = new PositionCollection(mongoClient);
 const promptCollection = new PromptCollection(mongoClient);
 
-const trpcInstance = initTRPC.create();
+const openAiConfiguration = new Configuration({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
+const openai = new OpenAIApi(openAiConfiguration);
+const aiService = new AiService(promptCollection, openai);
+
+const positionService = new PositionService(positionCollection, aiService);
+
+const trpcInstance = initTRPC.create();
 const positionController = new PositionController(
   trpcInstance,
-  positionCollection
+  positionCollection,
+  positionService
 );
 
 const promptController = new PromptController(trpcInstance, promptCollection);
@@ -33,6 +45,7 @@ const appRouter = router({
   deletePosition: positionController.delete(),
   updatePosition: positionController.update(),
   getPosition: positionController.get(),
+  parsePosition: positionController.parse(),
 
   listPrompts: promptController.listPrompts(),
   createPrompt: promptController.createPrompt(),
