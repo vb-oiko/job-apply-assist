@@ -14,6 +14,7 @@ export const PositionForm: React.FC<PositionFormProps> = ({
   initialValues,
 }) => {
   const [formData, setFormData] = React.useState<RawPositionInsertObject>({
+    type: "raw",
     url: initialValues?.url || "",
     description: initialValues?.description || "",
   });

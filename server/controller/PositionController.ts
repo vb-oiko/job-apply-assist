@@ -15,8 +15,8 @@ export const createPositionRequest = z.object({
 
 export const updatePositionRequest = z.discriminatedUnion("type", [
   z.object({
-    type: z.literal("raw"),
     id: z.string(),
+    type: z.literal("raw"),
     url: z.string(),
     description: z.string(),
   }),
