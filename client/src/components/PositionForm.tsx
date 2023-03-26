@@ -2,25 +2,51 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import React from "react";
-import { RawPositionInsertObject } from "../../../server/constants/types";
+import {
+  PositionType,
+  PositionUpdateObject,
+} from "../../../server/constants/types";
+
+export type PositionFormData = {
+  url?: string;
+  description?: string;
+  position?: string;
+  company?: string;
+  reasons?: string;
+  matchingPoints?: string;
+};
 
 export interface PositionFormProps {
-  onSubmit: (position: RawPositionInsertObject) => void;
-  initialValues?: RawPositionInsertObject;
+  onSubmit: (position: PositionUpdateObject) => void;
+  initialValues?: PositionFormData;
+  type: PositionType;
 }
 
 export const PositionForm: React.FC<PositionFormProps> = ({
   onSubmit,
   initialValues,
+  type,
 }) => {
-  const [formData, setFormData] = React.useState<RawPositionInsertObject>({
-    type: "raw",
+  const [formData, setFormData] = React.useState<PositionFormData>({
     url: initialValues?.url || "",
     description: initialValues?.description || "",
+    position: initialValues?.position || "",
+    company: initialValues?.company || "",
+    reasons: initialValues?.reasons || "",
+    matchingPoints: initialValues?.matchingPoints || "",
   });
 
   const handleSubmit = () => {
-    onSubmit(formData);
+    const validationResult = PositionUpdateObject.safeParse({
+      ...formData,
+      type,
+    });
+
+    if (!validationResult.success) {
+      return;
+    }
+
+    onSubmit(validationResult.data);
   };
 
   const handleChange: React.ChangeEventHandler<
@@ -41,6 +67,7 @@ export const PositionForm: React.FC<PositionFormProps> = ({
         type="text"
         fullWidth
         variant="outlined"
+        value={formData.url}
         onChange={handleChange}
       />
 
@@ -54,8 +81,22 @@ export const PositionForm: React.FC<PositionFormProps> = ({
         multiline
         rows={10}
         fullWidth
+        value={formData.description}
         onChange={handleChange}
       />
+
+      {type === "parsed" || type === "generated" ? (
+        <>
+          <TextField
+            required
+            id="position"
+            name="position"
+            label="Position"
+            fullWidth
+            onChange={handleChange}
+          />
+        </>
+      ) : null}
 
       <Box mb={1}></Box>
 

@@ -28,10 +28,12 @@ const promptController = new PromptController(trpcInstance, promptCollection);
 
 const router = trpcInstance.router;
 const appRouter = router({
-  listPositions: positionController.listPositions(),
-  createPosition: positionController.createPosition(),
-  deletePosition: positionController.deletePosition(),
-  updatePosition: positionController.updatePosition(),
+  listPositions: positionController.list(),
+  createPosition: positionController.create(),
+  deletePosition: positionController.delete(),
+  updatePosition: positionController.update(),
+  getPosition: positionController.get(),
+
   listPrompts: promptController.listPrompts(),
   createPrompt: promptController.createPrompt(),
   getPromptTypes: promptController.getPromptTypes(),

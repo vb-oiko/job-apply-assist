@@ -1,25 +1,29 @@
 import { useNavigate } from "react-router-dom";
-import { RawPositionInsertObject } from "../../../server/constants/types";
-import { PositionForm } from "../components/PositionForm";
+import { PositionForm, PositionFormData } from "../components/PositionForm";
 import { trpc } from "../utils/trpc";
 
 export const PositionCreate = () => {
   const utils = trpc.useContext();
-  const createReport = trpc.createPosition.useMutation({
+  const createPosition = trpc.createPosition.useMutation({
     onSuccess: () => {
       utils.listPositions.invalidate();
+      navigate("/positions");
     },
   });
 
   const navigate = useNavigate();
 
-  const handleSubmit = (position: RawPositionInsertObject) => {
-    createReport.mutate(position);
-    navigate("/positions");
+  const handleSubmit = (data: PositionFormData) => {
+    if (!data.url || !data.description) {
+      return;
+    }
+
+    createPosition.mutate({
+      url: data.url,
+      description: data.description,
+      type: "raw",
+    });
   };
-  return (
-    <>
-      <PositionForm onSubmit={handleSubmit} />
-    </>
-  );
+
+  return <PositionForm onSubmit={handleSubmit} type="raw" />;
 };

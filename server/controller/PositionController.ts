@@ -13,7 +13,7 @@ export default class PositionController {
     private readonly positionCollection: PositionCollection
   ) {}
 
-  listPositions() {
+  list() {
     return this.trpcInstance.procedure
       .input(z.object({}))
       .query(async (): Promise<Position[]> => {
@@ -21,7 +21,7 @@ export default class PositionController {
       });
   }
 
-  createPosition() {
+  create() {
     return this.trpcInstance.procedure
       .input(RawPositionInsertObject)
       .mutation(async ({ input }): Promise<string> => {
@@ -29,7 +29,7 @@ export default class PositionController {
       });
   }
 
-  deletePosition() {
+  delete() {
     return this.trpcInstance.procedure
       .input(z.string())
       .mutation(async ({ input }): Promise<void> => {
@@ -37,11 +37,19 @@ export default class PositionController {
       });
   }
 
-  updatePosition() {
+  update() {
     return this.trpcInstance.procedure
-      .input(PositionUpdateObject)
+      .input(z.object({ id: z.string(), position: PositionUpdateObject }))
       .mutation(async ({ input }): Promise<void> => {
-        await this.positionCollection.update(input);
+        await this.positionCollection.update(input.id, input.position);
+      });
+  }
+
+  get() {
+    return this.trpcInstance.procedure
+      .input(z.string())
+      .query(async ({ input }): Promise<Position | null> => {
+        return this.positionCollection.getById(input);
       });
   }
 }

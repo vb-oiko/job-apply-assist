@@ -34,8 +34,7 @@ export class PositionCollection {
     return this.collection.findOne({ _id: id });
   }
 
-  public async update(position: PositionUpdateObject) {
-    const { _id: id, ...rest } = position;
+  public async update(id: string, position: PositionUpdateObject) {
     await this.collection.updateOne({ _id: id }, { $set: position });
   }
 

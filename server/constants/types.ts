@@ -47,18 +47,16 @@ export const RawPositionInsertObject = RawPosition.omit({
 export type RawPositionInsertObject = z.infer<typeof RawPositionInsertObject>;
 
 export const PositionUpdateObject = z.discriminatedUnion("type", [
-  RawPosition.omit({ created: true })
+  RawPosition.omit({ created: true, _id: true })
     .partial()
-    .required({ _id: true, type: true }),
-  ParsedPosition.omit({ created: true })
-    .partial()
-    .required({ _id: true, type: true }),
-  GeneratedPosition.omit({ created: true })
-    .partial()
-    .required({ _id: true, type: true }),
+    .required({ type: true }),
+  ParsedPosition.omit({ created: true }).partial().required({ type: true }),
+  GeneratedPosition.omit({ created: true }).partial().required({ type: true }),
 ]);
 
 export type PositionUpdateObject = z.infer<typeof PositionUpdateObject>;
+
+export type PositionType = "raw" | "parsed" | "generated";
 
 export const PROMPTS = [
   "generate_cover_letter",
