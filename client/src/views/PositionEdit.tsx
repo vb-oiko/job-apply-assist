@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { PositionUpdateObject } from "../../../server/constants/types";
 import { NoMatch } from "../components/NoMatch";
-import { PositionForm, PositionFormData } from "../components/PositionForm";
+import { PositionForm } from "../components/PositionForm";
 import { trpc } from "../utils/trpc";
 
 export const PositionEdit = () => {
@@ -18,7 +18,7 @@ export const PositionEdit = () => {
 
   const regeneratePosition = trpc.parsePosition.useMutation({
     onSuccess: () => {
-      navigate(`/positions/${id}`);
+      utils.getPosition.invalidate();
     },
   });
 

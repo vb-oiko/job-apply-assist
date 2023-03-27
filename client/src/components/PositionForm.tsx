@@ -17,6 +17,15 @@ export type PositionFormData = {
   matchingPoints?: string;
 };
 
+const parseInitialValues = (initialValues?: PositionFormData) => ({
+  url: initialValues?.url || "",
+  description: initialValues?.description || "",
+  title: initialValues?.title || "",
+  company: initialValues?.company || "",
+  reasons: initialValues?.reasons || "",
+  matchingPoints: initialValues?.matchingPoints || "",
+});
+
 export interface PositionFormProps {
   onSubmit: (position: PositionUpdateObject) => void;
   onRegenerate?: () => void;
@@ -30,14 +39,13 @@ export const PositionForm: React.FC<PositionFormProps> = ({
   onRegenerate,
   type,
 }) => {
-  const [formData, setFormData] = React.useState<PositionFormData>({
-    url: initialValues?.url || "",
-    description: initialValues?.description || "",
-    title: initialValues?.title || "",
-    company: initialValues?.company || "",
-    reasons: initialValues?.reasons || "",
-    matchingPoints: initialValues?.matchingPoints || "",
-  });
+  const [formData, setFormData] = React.useState<PositionFormData>(
+    parseInitialValues(initialValues)
+  );
+
+  React.useEffect(() => {
+    setFormData(parseInitialValues(initialValues));
+  }, [initialValues]);
 
   const handleSubmit = () => {
     const validationResult = PositionUpdateObject.safeParse({
