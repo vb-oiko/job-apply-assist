@@ -1,6 +1,6 @@
 import { OpenAIApi } from "openai";
 import { z } from "zod";
-import { PromptService } from "./PromptService";
+import { PromptService, CoverLetterParams } from "./PromptService";
 
 export const JobInfo = z.object({
   title: z.string(),
@@ -16,13 +16,7 @@ export class AiService {
     private readonly promptService: PromptService
   ) {}
 
-  public async extractPositionAndCompany(
-    description: string
-  ): Promise<JobInfo> {
-    const prompt = await this.promptService.getExtractJobInfoPrompt({
-      description,
-    });
-
+  private async getCompletion(prompt: string) {
     console.log("calling Open AI API");
     const response = await this.openAi.createCompletion({
       model: "text-davinci-003",
@@ -44,9 +38,15 @@ export class AiService {
       throw new Error("Empty response");
     }
 
-    console.warn(`"${text}"`);
+    return text;
+  }
 
-    debugger;
+  public async extractJobInfo(description: string): Promise<JobInfo> {
+    const prompt = await this.promptService.getExtractJobInfoPrompt({
+      description,
+    });
+
+    const text = await this.getCompletion(prompt);
 
     const validationResult = JobInfo.safeParse(JSON.parse(text));
 
@@ -57,9 +57,24 @@ export class AiService {
     return validationResult.data;
   }
 
-  public async mockExtractPositionAndCompany(
-    description: string
-  ): Promise<JobInfo> {
+  public async getMatchingPoints(description: string): Promise<string> {
+    const resume = await this.promptService.getResume();
+
+    const prompt = await this.promptService.getMatchingPointsPrompt({
+      description,
+      resume,
+    });
+
+    return await this.getCompletion(prompt);
+  }
+
+  public async getCoverLetter(params: CoverLetterParams): Promise<string> {
+    const prompt = await this.promptService.getCoverLetterPrompt(params);
+
+    return await this.getCompletion(prompt);
+  }
+
+  public async mockExtractJobInfo(description: string): Promise<JobInfo> {
     const prompt = await this.promptService.getExtractJobInfoPrompt({
       description,
     });

@@ -44,6 +44,7 @@ const appRouter = router({
   updatePosition: positionController.update(),
   getPosition: positionController.get(),
   parsePosition: positionController.parse(),
+  generateDocs: positionController.generateDocs(),
 });
 
 const server = createServer(appRouter);

@@ -62,4 +62,12 @@ export default class PositionController {
         await this.positionService.parse(input);
       });
   }
+
+  generateDocs() {
+    return this.trpcInstance.procedure
+      .input(z.string())
+      .mutation(async ({ input }): Promise<void> => {
+        await this.positionService.generateDocs(input);
+      });
+  }
 }

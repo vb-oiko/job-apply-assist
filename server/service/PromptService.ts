@@ -7,6 +7,23 @@ enum PromptType {
   EXTRACT_JOB_INFO = "extract_job_info",
   GET_MATCHING_POINTS = "get_matching_points",
   GET_COVER_LETTER = "get_cover_letter",
+  RESUME = "resume",
+}
+
+export interface CoverLetterParams extends Record<string, string> {
+  title: string;
+  company: string;
+  reasons: string;
+  matchingPoints: string;
+}
+
+export interface MatchingPointsParams extends Record<string, string> {
+  description: string;
+  resume: string;
+}
+
+export interface JobDescriptionParams extends Record<string, string> {
+  description: string;
 }
 
 export class PromptService {
@@ -16,9 +33,9 @@ export class PromptService {
     this.baseDir = path.resolve(PROMPT_FILE_PATH);
   }
 
-  private async getPrompt(type: PromptType): Promise<string> {
+  private async getPrompt(promptType: PromptType): Promise<string> {
     return new Promise<string>((resolve) => {
-      const filePath = path.resolve(this.baseDir, PromptType.EXTRACT_JOB_INFO);
+      const filePath = path.resolve(this.baseDir, promptType);
 
       fs.readFile(`${filePath}.txt`, "utf8", (err, fileContent) => {
         if (err) {
@@ -43,24 +60,28 @@ export class PromptService {
     return result;
   }
 
-  public async getExtractJobInfoPrompt(values: Record<string, string>) {
+  public async getExtractJobInfoPrompt(params: JobDescriptionParams) {
     return this.insertValuesIntoPrompt(
       await this.getPrompt(PromptType.EXTRACT_JOB_INFO),
-      values
+      params
     );
   }
 
-  public async getMatchingPoints(values: Record<string, string>) {
+  public async getMatchingPointsPrompt(params: MatchingPointsParams) {
     return this.insertValuesIntoPrompt(
       await this.getPrompt(PromptType.GET_MATCHING_POINTS),
-      values
+      params
     );
   }
 
-  public async getCoverLetter(values: Record<string, string>) {
+  public async getCoverLetterPrompt(params: CoverLetterParams) {
     return this.insertValuesIntoPrompt(
       await this.getPrompt(PromptType.GET_COVER_LETTER),
-      values
+      params
     );
+  }
+
+  public async getResume() {
+    return this.getPrompt(PromptType.RESUME);
   }
 }

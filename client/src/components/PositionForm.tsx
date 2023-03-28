@@ -28,7 +28,8 @@ const parseInitialValues = (initialValues?: PositionFormData) => ({
 
 export interface PositionFormProps {
   onSubmit: (position: PositionUpdateObject) => void;
-  onRegenerate?: () => void;
+  onParse?: () => void;
+  onGenerateDocs?: () => void;
   initialValues?: PositionFormData;
   type: PositionType;
 }
@@ -36,7 +37,8 @@ export interface PositionFormProps {
 export const PositionForm: React.FC<PositionFormProps> = ({
   onSubmit,
   initialValues,
-  onRegenerate,
+  onParse,
+  onGenerateDocs,
   type,
 }) => {
   const [formData, setFormData] = React.useState<PositionFormData>(
@@ -96,16 +98,16 @@ export const PositionForm: React.FC<PositionFormProps> = ({
         onChange={handleChange}
       />
 
-      {initialValues && onRegenerate ? (
+      {initialValues && onParse ? (
         <>
           <Box mb={2}></Box>
 
           <Button
-            onClick={onRegenerate}
+            onClick={onParse}
             variant="outlined"
             disabled={!formData.url || !formData.description}
           >
-            Regenerate
+            Parse
           </Button>
         </>
       ) : null}
@@ -151,6 +153,30 @@ export const PositionForm: React.FC<PositionFormProps> = ({
             value={formData.reasons}
             onChange={handleChange}
           />
+
+          <Box mb={2}></Box>
+
+          <TextField
+            required
+            id="matchingPoints"
+            name="matchingPoints"
+            label="Matching points"
+            multiline
+            rows={8}
+            fullWidth
+            value={formData.matchingPoints}
+            onChange={handleChange}
+          />
+
+          <Box mb={2}></Box>
+
+          <Button
+            onClick={onGenerateDocs}
+            variant="outlined"
+            disabled={!formData.url || !formData.description}
+          >
+            Generate docs
+          </Button>
         </>
       ) : null}
 
