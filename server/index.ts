@@ -3,12 +3,11 @@ import * as dotenv from "dotenv";
 import { MongoClient, ServerApiVersion } from "mongodb";
 import { Configuration, OpenAIApi } from "openai";
 import { PositionCollection } from "./collection/PositionCollection";
-import { PromptCollection } from "./collection/PromptCollection";
 import { SERVER_PORT } from "./constants/constants";
 import PositionController from "./controller/PositionController";
-import PromptController from "./controller/PromptController";
 import { AiService } from "./service/AiService";
 import { PositionService } from "./service/PositionService";
+import { PromptService } from "./service/PromptService";
 import { createServer } from "./utils/createServer";
 
 dotenv.config();
@@ -18,14 +17,15 @@ const mongoClient = new MongoClient(process.env.MONGO_DB_CONNECT_URI!, {
 });
 mongoClient.connect();
 const positionCollection = new PositionCollection(mongoClient);
-const promptCollection = new PromptCollection(mongoClient);
 
 const openAiConfiguration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+const promptService = new PromptService();
+
 const openai = new OpenAIApi(openAiConfiguration);
-const aiService = new AiService(promptCollection, openai);
+const aiService = new AiService(openai, promptService);
 
 const positionService = new PositionService(positionCollection, aiService);
 
@@ -36,8 +36,6 @@ const positionController = new PositionController(
   positionService
 );
 
-const promptController = new PromptController(trpcInstance, promptCollection);
-
 const router = trpcInstance.router;
 const appRouter = router({
   listPositions: positionController.list(),
@@ -46,10 +44,6 @@ const appRouter = router({
   updatePosition: positionController.update(),
   getPosition: positionController.get(),
   parsePosition: positionController.parse(),
-
-  listPrompts: promptController.listPrompts(),
-  createPrompt: promptController.createPrompt(),
-  getPromptTypes: promptController.getPromptTypes(),
 });
 
 const server = createServer(appRouter);

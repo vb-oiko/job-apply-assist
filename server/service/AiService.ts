@@ -1,6 +1,6 @@
 import { OpenAIApi } from "openai";
 import { z } from "zod";
-import { PromptCollection } from "../collection/PromptCollection";
+import { PromptService } from "./PromptService";
 
 export const TitleAndCompany = z.object({
   title: z.string(),
@@ -11,21 +11,16 @@ export type TitleAndCompany = z.infer<typeof TitleAndCompany>;
 
 export class AiService {
   constructor(
-    private readonly promptCollection: PromptCollection,
-    private readonly openAi: OpenAIApi
+    private readonly openAi: OpenAIApi,
+    private readonly promptService: PromptService
   ) {}
 
   public async extractPositionAndCompany(
     description: string
   ): Promise<TitleAndCompany> {
-    const rawPrompt = await this.promptCollection.getMostRecent(
-      "extract_job_title_and_position"
-    );
+    const rawPrompt = this.promptService.extractJobTitleAndPosition;
 
-    const prompt = rawPrompt.prompt.replaceAll(
-      "{job_description}",
-      description
-    );
+    const prompt = rawPrompt.replaceAll("{job_description}", description);
 
     console.log("calling Open AI API");
     const response = await this.openAi.createCompletion({
@@ -59,5 +54,18 @@ export class AiService {
     }
 
     return validationResult.data;
+  }
+
+  public async mockExtractPositionAndCompany(
+    description: string
+  ): Promise<TitleAndCompany> {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({
+          title: "Software Engineer",
+          company: "Google",
+        });
+      }, 1000);
+    });
   }
 }

@@ -30,14 +30,6 @@ export const Layout = () => {
                 >
                   Positions
                 </Button>
-                <Button
-                  color="inherit"
-                  variant="text"
-                  component={RouterLink}
-                  to="prompts"
-                >
-                  Prompts
-                </Button>
               </Stack>
             </Toolbar>
           </AppBar>
