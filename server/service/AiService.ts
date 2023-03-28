@@ -2,12 +2,13 @@ import { OpenAIApi } from "openai";
 import { z } from "zod";
 import { PromptService } from "./PromptService";
 
-export const TitleAndCompany = z.object({
+export const JobInfo = z.object({
   title: z.string(),
   company: z.string(),
+  reasons: z.string(),
 });
 
-export type TitleAndCompany = z.infer<typeof TitleAndCompany>;
+export type JobInfo = z.infer<typeof JobInfo>;
 
 export class AiService {
   constructor(
@@ -17,10 +18,10 @@ export class AiService {
 
   public async extractPositionAndCompany(
     description: string
-  ): Promise<TitleAndCompany> {
-    const rawPrompt = this.promptService.extractJobTitleAndPosition;
-
-    const prompt = rawPrompt.replaceAll("{job_description}", description);
+  ): Promise<JobInfo> {
+    const prompt = await this.promptService.getExtractJobInfoPrompt({
+      description,
+    });
 
     console.log("calling Open AI API");
     const response = await this.openAi.createCompletion({
@@ -47,7 +48,7 @@ export class AiService {
 
     debugger;
 
-    const validationResult = TitleAndCompany.safeParse(JSON.parse(text));
+    const validationResult = JobInfo.safeParse(JSON.parse(text));
 
     if (!validationResult.success) {
       throw new Error("Invalid response");
@@ -58,12 +59,17 @@ export class AiService {
 
   public async mockExtractPositionAndCompany(
     description: string
-  ): Promise<TitleAndCompany> {
+  ): Promise<JobInfo> {
+    const prompt = await this.promptService.getExtractJobInfoPrompt({
+      description,
+    });
+
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve({
           title: "Software Engineer",
           company: "Google",
+          reasons: "reason 1, reason 2, reason 3",
         });
       }, 1000);
     });

@@ -14,9 +14,8 @@ export class PositionService {
       throw new Error("Position not found");
     }
 
-    const { title, company } = await this.aiService.extractPositionAndCompany(
-      position.description
-    );
+    const { title, company, reasons } =
+      await this.aiService.mockExtractPositionAndCompany(position.description);
 
     const { _id: id, url, description } = position;
 
@@ -26,6 +25,7 @@ export class PositionService {
       description,
       title,
       company,
+      reasons,
     });
   }
 }

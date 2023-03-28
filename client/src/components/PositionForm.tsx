@@ -137,6 +137,20 @@ export const PositionForm: React.FC<PositionFormProps> = ({
               />
             </Grid>
           </Grid>
+
+          <Box mb={2}></Box>
+
+          <TextField
+            required
+            id="reasons"
+            name="reasons"
+            label="Reasons to join the company"
+            multiline
+            rows={3}
+            fullWidth
+            value={formData.reasons}
+            onChange={handleChange}
+          />
         </>
       ) : null}
 
