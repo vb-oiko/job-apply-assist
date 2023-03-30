@@ -38,7 +38,7 @@ export class PositionService {
 
     const { title, company, reasons, matchingPoints } = position;
 
-    const coverLetter = await this.aiService.getCoverLetter({
+    const coverLetter = await this.aiService.getCoverLetterText({
       title,
       company,
       reasons,

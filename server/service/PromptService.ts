@@ -8,6 +8,7 @@ enum PromptType {
   GET_MATCHING_POINTS = "get_matching_points",
   GET_COVER_LETTER = "get_cover_letter",
   RESUME = "resume",
+  NAME = "name",
 }
 
 export interface CoverLetterParams extends Record<string, string> {
@@ -77,11 +78,15 @@ export class PromptService {
   public async getCoverLetterPrompt(params: CoverLetterParams) {
     return this.insertValuesIntoPrompt(
       await this.getPrompt(PromptType.GET_COVER_LETTER),
-      params
+      { ...params, name: await this.getName() }
     );
   }
 
   public async getResume() {
     return this.getPrompt(PromptType.RESUME);
+  }
+
+  public async getName() {
+    return this.getPrompt(PromptType.NAME);
   }
 }

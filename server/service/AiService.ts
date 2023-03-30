@@ -1,5 +1,6 @@
 import { OpenAIApi } from "openai";
 import { z } from "zod";
+import { GptModelStrategy, TurboStrategy } from "../utils/GptModelStrategy";
 import { PromptService, CoverLetterParams } from "./PromptService";
 
 export const JobInfo = z.object({
@@ -13,40 +14,16 @@ export type JobInfo = z.infer<typeof JobInfo>;
 export class AiService {
   constructor(
     private readonly openAi: OpenAIApi,
-    private readonly promptService: PromptService
+    private readonly promptService: PromptService,
+    private readonly gptModelStrategy: GptModelStrategy = new TurboStrategy()
   ) {}
-
-  private async getCompletion(prompt: string) {
-    console.log("calling Open AI API");
-    const response = await this.openAi.createCompletion({
-      model: "text-davinci-003",
-      prompt,
-      max_tokens: 2048,
-      temperature: 0,
-      n: 1,
-    });
-
-    if (!response.data.choices.length) {
-      throw new Error("Empty response");
-    }
-
-    console.log("completion finished");
-
-    const { text } = response.data.choices[0];
-
-    if (!text) {
-      throw new Error("Empty response");
-    }
-
-    return text;
-  }
 
   public async extractJobInfo(description: string): Promise<JobInfo> {
     const prompt = await this.promptService.getExtractJobInfoPrompt({
       description,
     });
 
-    const text = await this.getCompletion(prompt);
+    const text = await this.gptModelStrategy.complete(this.openAi, prompt);
 
     const validationResult = JobInfo.safeParse(JSON.parse(text));
 
@@ -65,28 +42,12 @@ export class AiService {
       resume,
     });
 
-    return await this.getCompletion(prompt);
+    return await this.gptModelStrategy.complete(this.openAi, prompt);
   }
 
-  public async getCoverLetter(params: CoverLetterParams): Promise<string> {
+  public async getCoverLetterText(params: CoverLetterParams): Promise<string> {
     const prompt = await this.promptService.getCoverLetterPrompt(params);
 
-    return await this.getCompletion(prompt);
-  }
-
-  public async mockExtractJobInfo(description: string): Promise<JobInfo> {
-    const prompt = await this.promptService.getExtractJobInfoPrompt({
-      description,
-    });
-
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          title: "Software Engineer",
-          company: "Google",
-          reasons: "reason 1, reason 2, reason 3",
-        });
-      }, 1000);
-    });
+    return await this.gptModelStrategy.complete(this.openAi, prompt);
   }
 }
