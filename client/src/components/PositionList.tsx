@@ -42,8 +42,55 @@ export const PositionList = () => {
   }
 
   const columns: GridColDef[] = [
-    { field: "url", headerName: "URL", flex: 1 },
-    { field: "description", headerName: "Description", flex: 3 },
+    {
+      field: "created",
+      headerName: "Created",
+      flex: 1.5,
+      renderCell: (params) =>
+        new Intl.DateTimeFormat("default", {
+          year: "numeric",
+          month: "numeric",
+          day: "numeric",
+          hour: "numeric",
+          minute: "numeric",
+          second: "numeric",
+          hour12: false,
+        }).format(new Date(params.value)),
+    },
+    {
+      field: "url",
+      headerName: "URL",
+      flex: 1,
+      renderCell: (params) => (
+        <a href={params.value} target="_blank" rel="noopener noreferrer">
+          position page
+        </a>
+      ),
+    },
+    { field: "company", headerName: "Company", flex: 2 },
+    { field: "title", headerName: "Position", flex: 3 },
+    {
+      field: "resumeUrl",
+      headerName: "Resume",
+      flex: 1,
+      renderCell: (params) =>
+        params.value ? (
+          <a href={params.value} target="_blank" rel="noopener noreferrer">
+            resume
+          </a>
+        ) : null,
+    },
+    {
+      field: "coverLetterUrl",
+      headerName: "Cover letter",
+      flex: 1,
+      renderCell: (params) =>
+        params.value ? (
+          <a href={params.value} target="_blank" rel="noopener noreferrer">
+            cover letter
+          </a>
+        ) : null,
+    },
     {
       field: "actions",
       type: "actions",

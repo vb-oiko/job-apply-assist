@@ -15,6 +15,9 @@ export type PositionFormData = {
   company?: string;
   reasons?: string;
   matchingPoints?: string;
+  city?: string;
+  resumeUrl?: string;
+  coverLetterUrl?: string;
 };
 
 const parseInitialValues = (initialValues?: PositionFormData) => ({
@@ -24,6 +27,9 @@ const parseInitialValues = (initialValues?: PositionFormData) => ({
   company: initialValues?.company || "",
   reasons: initialValues?.reasons || "",
   matchingPoints: initialValues?.matchingPoints || "",
+  city: initialValues?.city || "",
+  resumeUrl: initialValues?.resumeUrl || "",
+  coverLetterUrl: initialValues?.coverLetterUrl || "",
 });
 
 export interface PositionFormProps {
@@ -116,7 +122,7 @@ export const PositionForm: React.FC<PositionFormProps> = ({
         <>
           <Box mb={2}></Box>
           <Grid container spacing={2}>
-            <Grid item xs={6}>
+            <Grid item xs={4}>
               <TextField
                 required
                 id="title"
@@ -127,7 +133,7 @@ export const PositionForm: React.FC<PositionFormProps> = ({
                 onChange={handleChange}
               />
             </Grid>
-            <Grid item xs={6}>
+            <Grid item xs={4}>
               <TextField
                 required
                 id="company"
@@ -135,6 +141,17 @@ export const PositionForm: React.FC<PositionFormProps> = ({
                 label="Company"
                 fullWidth
                 value={formData.company}
+                onChange={handleChange}
+              />
+            </Grid>
+            <Grid item xs={4}>
+              <TextField
+                required
+                id="city"
+                name="city"
+                label="City"
+                fullWidth
+                value={formData.city}
                 onChange={handleChange}
               />
             </Grid>
@@ -177,6 +194,27 @@ export const PositionForm: React.FC<PositionFormProps> = ({
           >
             Generate docs
           </Button>
+        </>
+      ) : null}
+
+      {type === "generated" ? (
+        <>
+          <Box mb={2}></Box>
+          <a
+            href={formData.resumeUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Resume
+          </a>
+          <Box mb={2}></Box>
+          <a
+            href={formData.coverLetterUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Cover letter
+          </a>
         </>
       ) : null}
 
