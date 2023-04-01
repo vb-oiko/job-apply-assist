@@ -6,6 +6,7 @@ import { PositionCollection } from "./collection/PositionCollection";
 import { SERVER_PORT } from "./constants/constants";
 import PositionController from "./controller/PositionController";
 import { AiService } from "./service/AiService";
+import { GDocService } from "./service/GDocService";
 import { PositionService } from "./service/PositionService";
 import { PromptService } from "./service/PromptService";
 import { createServer } from "./utils/createServer";
@@ -26,8 +27,20 @@ const promptService = new PromptService();
 
 const openai = new OpenAIApi(openAiConfiguration);
 const aiService = new AiService(openai, promptService);
+const gDocService = new GDocService({
+  email: process.env.GOOGLE_CLIENT_EMAIL!,
+  key: process.env.GOOGLE_PRIVATE_KEY!,
+  rootFolderId: process.env.GOOGLE_ROOT_FOLDER_ID!,
+  coverLetterTemplateId: process.env.GOOGLE_COVER_LETTER_TEMPLATE_ID!,
+  resumeTemplateId: process.env.GOOGLE_RESUME_TEMPLATE_ID!,
+});
 
-const positionService = new PositionService(positionCollection, aiService);
+const positionService = new PositionService(
+  positionCollection,
+  aiService,
+  gDocService,
+  promptService
+);
 
 const trpcInstance = initTRPC.create();
 const positionController = new PositionController(

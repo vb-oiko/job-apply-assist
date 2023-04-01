@@ -18,14 +18,16 @@ export const ParsedPosition = RawPosition.merge(
     company: z.string(),
     reasons: z.string(),
     matchingPoints: z.string(),
+    name: z.string(),
+    city: z.string(),
     type: z.literal("parsed"),
   })
 );
 
 export const GeneratedPosition = ParsedPosition.merge(
   z.object({
-    resumeGDocId: z.string(),
-    coverLetterGDocId: z.string(),
+    resumeUrl: z.string(),
+    coverLetterUrl: z.string(),
     type: z.literal("generated"),
   })
 );

@@ -7,6 +7,7 @@ export const JobInfo = z.object({
   title: z.string(),
   company: z.string(),
   reasons: z.string(),
+  city: z.string(),
 });
 
 export type JobInfo = z.infer<typeof JobInfo>;

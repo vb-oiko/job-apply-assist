@@ -1,10 +1,14 @@
 import { PositionCollection } from "../collection/PositionCollection";
 import { AiService } from "./AiService";
+import { GDocService } from "./GDocService";
+import { PromptService } from "./PromptService";
 
 export class PositionService {
   constructor(
     private readonly positionCollection: PositionCollection,
-    private readonly aiService: AiService
+    private readonly aiService: AiService,
+    private readonly gDocService: GDocService,
+    private readonly promptService: PromptService
   ) {}
 
   public async parse(positionId: string) {
@@ -12,11 +16,12 @@ export class PositionService {
 
     const { _id: id, url, description } = position;
 
-    const { title, company, reasons } = await this.aiService.extractJobInfo(
-      description
-    );
+    const { title, company, reasons, city } =
+      await this.aiService.extractJobInfo(description);
 
     const matchingPoints = await this.aiService.getMatchingPoints(description);
+
+    const name = await this.promptService.getName();
 
     await this.positionCollection.update(id, {
       type: "parsed",
@@ -26,6 +31,8 @@ export class PositionService {
       company,
       reasons,
       matchingPoints,
+      city,
+      name,
     });
   }
 
@@ -36,16 +43,29 @@ export class PositionService {
       throw new Error("Position not parsed");
     }
 
-    const { title, company, reasons, matchingPoints } = position;
+    const { title, company, name, city, reasons, matchingPoints } = position;
 
-    const coverLetter = await this.aiService.getCoverLetterText({
+    const coverLetterText = await this.aiService.getCoverLetterText({
       title,
       company,
       reasons,
       matchingPoints,
     });
 
-    console.warn(coverLetter);
+    const { resumeUrl, coverLetterUrl } =
+      await this.gDocService.createDocuments({
+        title,
+        company,
+        name,
+        city,
+        coverLetterText,
+      });
+
+    await this.positionCollection.update(positionId, {
+      type: "generated",
+      resumeUrl,
+      coverLetterUrl,
+    });
   }
 
   private async getPositionOrFail(positionId: string) {

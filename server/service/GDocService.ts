@@ -1,21 +1,23 @@
 import { docs_v1, drive_v3, google } from "googleapis";
 import Auth from "google-auth-library";
 
+export interface GDocServiceConfig {
+  email: string;
+  key: string;
+  rootFolderId: string;
+  coverLetterTemplateId: string;
+  resumeTemplateId: string;
+}
+
 export class GDocService {
   private auth: Auth.JWT;
   private drive: drive_v3.Drive;
   private docs: docs_v1.Docs;
 
-  constructor(
-    email: string,
-    key: string,
-    private readonly rootFolderId: string,
-    private readonly coverLetterTemplateId: string,
-    private readonly resumeTemplateId: string
-  ) {
+  constructor(private readonly config: GDocServiceConfig) {
     this.auth = new google.auth.JWT({
-      email,
-      key,
+      email: this.config.email,
+      key: this.config.key,
       scopes: [
         "https://www.googleapis.com/auth/drive",
         "https://www.googleapis.com/auth/documents",
@@ -31,7 +33,7 @@ export class GDocService {
       requestBody: {
         name: company,
         mimeType: "application/vnd.google-apps.folder",
-        parents: [this.rootFolderId],
+        parents: [this.config.rootFolderId],
       },
     });
 
@@ -100,7 +102,7 @@ export class GDocService {
     const resumeId = await this.copyTemplate({
       name: `${params.title} - Resume - ${params.name}`,
       folderId,
-      templateId: this.resumeTemplateId,
+      templateId: this.config.resumeTemplateId,
     });
 
     await this.replacePlaceholders(resumeId, params);
@@ -115,7 +117,7 @@ export class GDocService {
     const coverLetterId = await this.copyTemplate({
       name: `${params.title} - Cover Letter - ${params.name}`,
       folderId,
-      templateId: this.coverLetterTemplateId,
+      templateId: this.config.coverLetterTemplateId,
     });
 
     await this.replacePlaceholders(coverLetterId, {
@@ -142,6 +144,8 @@ export class GDocService {
   };
 
   public createDocuments = async (params: CreateDocumentsParams) => {
+    console.log("Creating documents started");
+
     const { company, name, title, city, coverLetterText } = params;
 
     const folderId = await this.createCompanySubFolder(company);
@@ -150,11 +154,14 @@ export class GDocService {
     const coverLetterId = await this.createCoverLetter(folderId, {
       name,
       coverLetterText,
+      title,
+      city,
     });
 
     const resumeUrl = await this.getDocumentUrl(resumeId);
     const coverLetterUrl = await this.getDocumentUrl(coverLetterId);
 
+    console.log("Creating documents finished");
     return { resumeUrl, coverLetterUrl };
   };
 }
@@ -168,6 +175,8 @@ export interface ResumeParams extends Record<string, string> {
 export interface CoverLetterParams extends Record<string, string> {
   name: string;
   coverLetterText: string;
+  title: string;
+  city: string;
 }
 
 export interface CreateDocumentsParams extends ResumeParams, CoverLetterParams {
