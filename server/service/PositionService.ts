@@ -20,6 +20,7 @@ export class PositionService {
       await this.aiService.extractJobInfo(description);
 
     const matchingPoints = await this.aiService.getMatchingPoints(description);
+    const objective = await this.aiService.getObjective(description);
 
     const name = await this.promptService.getName();
 
@@ -33,17 +34,19 @@ export class PositionService {
       matchingPoints,
       city,
       name,
+      objective,
     });
   }
 
   public async generateDocs(positionId: string) {
     const position = await this.getPositionOrFail(positionId);
 
-    if (position.type !== "parsed") {
+    if (position.type === "raw") {
       throw new Error("Position not parsed");
     }
 
-    const { title, company, name, city, reasons, matchingPoints } = position;
+    const { title, company, name, city, reasons, matchingPoints, objective } =
+      position;
 
     const coverLetterText = await this.aiService.getCoverLetterText({
       title,
@@ -59,6 +62,7 @@ export class PositionService {
         name,
         city,
         coverLetterText,
+        objective,
       });
 
     await this.positionCollection.update(positionId, {

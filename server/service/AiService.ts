@@ -46,6 +46,17 @@ export class AiService {
     return await this.gptModelStrategy.complete(this.openAi, prompt);
   }
 
+  public async getObjective(description: string): Promise<string> {
+    const resume = await this.promptService.getResume();
+
+    const prompt = await this.promptService.getObjectivePrompt({
+      description,
+      resume,
+    });
+
+    return await this.gptModelStrategy.complete(this.openAi, prompt);
+  }
+
   public async getCoverLetterText(params: CoverLetterParams): Promise<string> {
     const prompt = await this.promptService.getCoverLetterPrompt(params);
 

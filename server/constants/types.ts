@@ -18,6 +18,7 @@ export const ParsedPosition = RawPosition.merge(
     company: z.string(),
     reasons: z.string(),
     matchingPoints: z.string(),
+    objective: z.string(),
     name: z.string(),
     city: z.string(),
     type: z.literal("parsed"),

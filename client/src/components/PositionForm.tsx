@@ -15,6 +15,7 @@ export type PositionFormData = {
   company?: string;
   reasons?: string;
   matchingPoints?: string;
+  objective?: string;
   city?: string;
   resumeUrl?: string;
   coverLetterUrl?: string;
@@ -27,6 +28,7 @@ const parseInitialValues = (initialValues?: PositionFormData) => ({
   company: initialValues?.company || "",
   reasons: initialValues?.reasons || "",
   matchingPoints: initialValues?.matchingPoints || "",
+  objective: initialValues?.objective || "",
   city: initialValues?.city || "",
   resumeUrl: initialValues?.resumeUrl || "",
   coverLetterUrl: initialValues?.coverLetterUrl || "",
@@ -182,6 +184,20 @@ export const PositionForm: React.FC<PositionFormProps> = ({
             rows={8}
             fullWidth
             value={formData.matchingPoints}
+            onChange={handleChange}
+          />
+
+          <Box mb={2}></Box>
+
+          <TextField
+            required
+            id="objective"
+            name="objective"
+            label="Objective"
+            multiline
+            rows={3}
+            fullWidth
+            value={formData.objective}
             onChange={handleChange}
           />
 

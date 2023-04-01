@@ -30,8 +30,6 @@ export abstract class GptModelStrategy {
 
     const text = response.data.choices[0].message?.content;
 
-    console.warn(text);
-
     if (!text) {
       throw new Error("Empty response");
     }

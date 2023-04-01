@@ -6,6 +6,7 @@ const PROMPT_FILE_PATH = "./prompts";
 enum PromptType {
   EXTRACT_JOB_INFO = "extract_job_info",
   GET_MATCHING_POINTS = "get_matching_points",
+  GET_OBJECTIVE = "get_objective",
   GET_COVER_LETTER = "get_cover_letter",
   RESUME = "resume",
   NAME = "name",
@@ -19,6 +20,11 @@ export interface CoverLetterParams extends Record<string, string> {
 }
 
 export interface MatchingPointsParams extends Record<string, string> {
+  description: string;
+  resume: string;
+}
+
+export interface ObjectiveParams extends Record<string, string> {
   description: string;
   resume: string;
 }
@@ -71,6 +77,13 @@ export class PromptService {
   public async getMatchingPointsPrompt(params: MatchingPointsParams) {
     return this.insertValuesIntoPrompt(
       await this.getPrompt(PromptType.GET_MATCHING_POINTS),
+      params
+    );
+  }
+
+  public async getObjectivePrompt(params: ObjectiveParams) {
+    return this.insertValuesIntoPrompt(
+      await this.getPrompt(PromptType.GET_OBJECTIVE),
       params
     );
   }

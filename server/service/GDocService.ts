@@ -146,11 +146,17 @@ export class GDocService {
   public createDocuments = async (params: CreateDocumentsParams) => {
     console.log("Creating documents started");
 
-    const { company, name, title, city, coverLetterText } = params;
+    const { company, name, title, city, coverLetterText, objective } = params;
 
     const folderId = await this.createCompanySubFolder(company);
 
-    const resumeId = await this.createResume(folderId, { name, title, city });
+    const resumeId = await this.createResume(folderId, {
+      name,
+      title,
+      city,
+      company,
+      objective,
+    });
     const coverLetterId = await this.createCoverLetter(folderId, {
       name,
       coverLetterText,
@@ -170,6 +176,8 @@ export interface ResumeParams extends Record<string, string> {
   name: string;
   title: string;
   city: string;
+  company: string;
+  objective: string;
 }
 
 export interface CoverLetterParams extends Record<string, string> {
