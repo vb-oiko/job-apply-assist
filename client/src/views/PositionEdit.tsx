@@ -1,4 +1,4 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { PositionUpdateObject } from "../../../server/constants/types";
 import { NoMatch } from "../components/NoMatch";
 import { PositionForm } from "../components/PositionForm";
@@ -7,7 +7,6 @@ import { trpc } from "../utils/trpc";
 export const PositionEdit = () => {
   const { id } = useParams();
   const utils = trpc.useContext();
-  const navigate = useNavigate();
 
   const updatePositionMutation = trpc.updatePosition.useMutation({
     onSuccess: () => {
@@ -22,6 +21,12 @@ export const PositionEdit = () => {
   });
 
   const generateDocsMutation = trpc.generateDocs.useMutation({
+    onSuccess: () => {
+      utils.getPosition.invalidate();
+    },
+  });
+
+  const generateAnswerMutation = trpc.generateAnswer.useMutation({
     onSuccess: () => {
       utils.getPosition.invalidate();
     },
@@ -46,6 +51,10 @@ export const PositionEdit = () => {
     generateDocsMutation.mutate(id);
   };
 
+  const handleGenerateAnswer = (questionId: string) => {
+    generateAnswerMutation.mutate({ positionId: id, questionId });
+  };
+
   const { data: position } = trpc.getPosition.useQuery(id);
 
   if (!position) {
@@ -67,6 +76,7 @@ export const PositionEdit = () => {
       onParse={handleParse}
       onGenerateDocs={handleGenerateDocs}
       disabled={loading}
+      onGenerateAnswer={handleGenerateAnswer}
     />
   );
 };

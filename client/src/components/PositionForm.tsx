@@ -45,6 +45,7 @@ export interface PositionFormProps {
   initialValues?: PositionFormData;
   type: PositionType;
   disabled?: boolean;
+  onGenerateAnswer?: (questionId: string) => void;
 }
 
 export const PositionForm: React.FC<PositionFormProps> = ({
@@ -54,6 +55,7 @@ export const PositionForm: React.FC<PositionFormProps> = ({
   onGenerateDocs,
   type,
   disabled = false,
+  onGenerateAnswer,
 }) => {
   const [formData, setFormData] = React.useState<PositionFormData>(
     parseInitialValues(initialValues)
@@ -129,6 +131,7 @@ export const PositionForm: React.FC<PositionFormProps> = ({
         onChange={handleQuestionsChange}
         questions={formData.questions}
         disabled={disabled}
+        onGenerateAnswer={onGenerateAnswer}
       />
       {initialValues && onParse ? (
         <>

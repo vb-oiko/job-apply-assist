@@ -1,7 +1,11 @@
 import { OpenAIApi } from "openai";
 import { z } from "zod";
 import { GptModelStrategy, TurboStrategy } from "../utils/GptModelStrategy";
-import { PromptService, CoverLetterParams } from "./PromptService";
+import {
+  PromptService,
+  CoverLetterParams,
+  AdditionalQuestionParams,
+} from "./PromptService";
 
 export const JobInfo = z.object({
   title: z.string(),
@@ -59,6 +63,14 @@ export class AiService {
 
   public async getCoverLetterText(params: CoverLetterParams): Promise<string> {
     const prompt = await this.promptService.getCoverLetterPrompt(params);
+
+    return await this.gptModelStrategy.complete(this.openAi, prompt);
+  }
+
+  public async getAnswerText(
+    params: AdditionalQuestionParams
+  ): Promise<string> {
+    const prompt = await this.promptService.getAdditionalQuestionPrompt(params);
 
     return await this.gptModelStrategy.complete(this.openAi, prompt);
   }

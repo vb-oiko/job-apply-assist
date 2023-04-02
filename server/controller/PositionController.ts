@@ -70,4 +70,12 @@ export default class PositionController {
         await this.positionService.generateDocs(input);
       });
   }
+
+  generateAnswer() {
+    return this.trpcInstance.procedure
+      .input(z.object({ positionId: z.string(), questionId: z.string() }))
+      .mutation(async ({ input }): Promise<void> => {
+        await this.positionService.generateAnswer(input);
+      });
+  }
 }

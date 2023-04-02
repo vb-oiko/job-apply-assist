@@ -90,4 +90,35 @@ export class PositionService {
 
     await this.parse(positionId);
   }
+
+  public async generateAnswer({
+    positionId,
+    questionId,
+  }: {
+    positionId: string;
+    questionId: string;
+  }) {
+    const position = await this.getPositionOrFail(positionId);
+
+    const { questions, description } = position;
+
+    const question = questions?.find((question) => question.id === questionId);
+
+    if (!question) {
+      throw new Error("Question not found");
+    }
+
+    const answer = await this.aiService.getAnswerText({
+      question: question.question,
+      description,
+      resume: await this.promptService.getResume(),
+    });
+
+    await this.positionCollection.update(positionId, {
+      ...position,
+      questions: questions?.map((question) =>
+        question.id === questionId ? { ...question, answer } : question
+      ),
+    });
+  }
 }

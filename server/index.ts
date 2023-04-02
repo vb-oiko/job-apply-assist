@@ -58,6 +58,7 @@ const appRouter = router({
   getPosition: positionController.get(),
   parsePosition: positionController.parse(),
   generateDocs: positionController.generateDocs(),
+  generateAnswer: positionController.generateAnswer(),
 });
 
 const server = createServer(appRouter);

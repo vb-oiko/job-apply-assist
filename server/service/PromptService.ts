@@ -10,6 +10,7 @@ enum PromptType {
   GET_COVER_LETTER = "get_cover_letter",
   RESUME = "resume",
   NAME = "name",
+  ADDITIONAL_QUESTION = "additional_question",
 }
 
 export interface CoverLetterParams extends Record<string, string> {
@@ -31,6 +32,12 @@ export interface ObjectiveParams extends Record<string, string> {
 
 export interface JobDescriptionParams extends Record<string, string> {
   description: string;
+}
+
+export interface AdditionalQuestionParams extends Record<string, string> {
+  description: string;
+  resume: string;
+  question: string;
 }
 
 export class PromptService {
@@ -84,6 +91,13 @@ export class PromptService {
   public async getObjectivePrompt(params: ObjectiveParams) {
     return this.insertValuesIntoPrompt(
       await this.getPrompt(PromptType.GET_OBJECTIVE),
+      params
+    );
+  }
+
+  public async getAdditionalQuestionPrompt(params: AdditionalQuestionParams) {
+    return this.insertValuesIntoPrompt(
+      await this.getPrompt(PromptType.ADDITIONAL_QUESTION),
       params
     );
   }
