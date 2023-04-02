@@ -40,6 +40,7 @@ export interface PositionFormProps {
   onGenerateDocs?: () => void;
   initialValues?: PositionFormData;
   type: PositionType;
+  disabled?: boolean;
 }
 
 export const PositionForm: React.FC<PositionFormProps> = ({
@@ -48,6 +49,7 @@ export const PositionForm: React.FC<PositionFormProps> = ({
   onParse,
   onGenerateDocs,
   type,
+  disabled = false,
 }) => {
   const [formData, setFormData] = React.useState<PositionFormData>(
     parseInitialValues(initialValues)
@@ -90,6 +92,7 @@ export const PositionForm: React.FC<PositionFormProps> = ({
         variant="outlined"
         value={formData.url}
         onChange={handleChange}
+        disabled={disabled}
       />
 
       <Box mb={2}></Box>
@@ -104,6 +107,7 @@ export const PositionForm: React.FC<PositionFormProps> = ({
         fullWidth
         value={formData.description}
         onChange={handleChange}
+        disabled={disabled}
       />
 
       {initialValues && onParse ? (
@@ -113,7 +117,7 @@ export const PositionForm: React.FC<PositionFormProps> = ({
           <Button
             onClick={onParse}
             variant="outlined"
-            disabled={!formData.url || !formData.description}
+            disabled={!formData.url || !formData.description || disabled}
           >
             Parse
           </Button>
@@ -133,6 +137,7 @@ export const PositionForm: React.FC<PositionFormProps> = ({
                 fullWidth
                 value={formData.title}
                 onChange={handleChange}
+                disabled={disabled}
               />
             </Grid>
             <Grid item xs={4}>
@@ -144,6 +149,7 @@ export const PositionForm: React.FC<PositionFormProps> = ({
                 fullWidth
                 value={formData.company}
                 onChange={handleChange}
+                disabled={disabled}
               />
             </Grid>
             <Grid item xs={4}>
@@ -155,6 +161,7 @@ export const PositionForm: React.FC<PositionFormProps> = ({
                 fullWidth
                 value={formData.city}
                 onChange={handleChange}
+                disabled={disabled}
               />
             </Grid>
           </Grid>
@@ -171,6 +178,7 @@ export const PositionForm: React.FC<PositionFormProps> = ({
             fullWidth
             value={formData.reasons}
             onChange={handleChange}
+            disabled={disabled}
           />
 
           <Box mb={2}></Box>
@@ -185,6 +193,7 @@ export const PositionForm: React.FC<PositionFormProps> = ({
             fullWidth
             value={formData.matchingPoints}
             onChange={handleChange}
+            disabled={disabled}
           />
 
           <Box mb={2}></Box>
@@ -199,6 +208,7 @@ export const PositionForm: React.FC<PositionFormProps> = ({
             fullWidth
             value={formData.objective}
             onChange={handleChange}
+            disabled={disabled}
           />
 
           <Box mb={2}></Box>
@@ -206,7 +216,7 @@ export const PositionForm: React.FC<PositionFormProps> = ({
           <Button
             onClick={onGenerateDocs}
             variant="outlined"
-            disabled={!formData.url || !formData.description}
+            disabled={!formData.url || !formData.description || disabled}
           >
             Generate docs
           </Button>
@@ -239,7 +249,7 @@ export const PositionForm: React.FC<PositionFormProps> = ({
       <Button
         onClick={handleSubmit}
         variant="contained"
-        disabled={!formData.url || !formData.description}
+        disabled={!formData.url || !formData.description || disabled}
       >
         Save
       </Button>

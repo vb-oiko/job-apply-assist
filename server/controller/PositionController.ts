@@ -26,8 +26,8 @@ export default class PositionController {
   create() {
     return this.trpcInstance.procedure
       .input(RawPositionInsertObject)
-      .mutation(async ({ input }): Promise<string> => {
-        return await this.positionCollection.insert(input);
+      .mutation(async ({ input }): Promise<void> => {
+        await this.positionService.createAndParse(input);
       });
   }
 

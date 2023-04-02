@@ -11,8 +11,7 @@ export const PositionEdit = () => {
 
   const updatePositionMutation = trpc.updatePosition.useMutation({
     onSuccess: () => {
-      utils.listPositions.invalidate();
-      navigate("/positions");
+      utils.getPosition.invalidate();
     },
   });
 
@@ -55,6 +54,11 @@ export const PositionEdit = () => {
 
   const { _id, type, created, ...rest } = position;
 
+  const loading =
+    updatePositionMutation.isLoading ||
+    generateDocsMutation.isLoading ||
+    parsePositionMutation.isLoading;
+
   return (
     <PositionForm
       onSubmit={handleSubmit}
@@ -62,6 +66,7 @@ export const PositionEdit = () => {
       initialValues={rest}
       onParse={handleParse}
       onGenerateDocs={handleGenerateDocs}
+      disabled={loading}
     />
   );
 };

@@ -1,4 +1,5 @@
 import { PositionCollection } from "../collection/PositionCollection";
+import { RawPositionInsertObject } from "../constants/types";
 import { AiService } from "./AiService";
 import { GDocService } from "./GDocService";
 import { PromptService } from "./PromptService";
@@ -80,5 +81,13 @@ export class PositionService {
     }
 
     return position;
+  }
+
+  public async createAndParse(position: RawPositionInsertObject) {
+    const positionId = await this.positionCollection.insert({
+      ...position,
+    });
+
+    await this.parse(positionId);
   }
 }
