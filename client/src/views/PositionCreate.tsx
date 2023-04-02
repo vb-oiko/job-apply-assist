@@ -21,6 +21,7 @@ export const PositionCreate = () => {
     createPosition.mutate({
       url: data.url,
       description: data.description,
+      questions: data.questions,
       type: "raw",
     });
   };

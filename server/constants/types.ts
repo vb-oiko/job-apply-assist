@@ -1,5 +1,13 @@
 import { z } from "zod";
 
+export const Question = z.object({
+  id: z.string(),
+  question: z.string(),
+  answer: z.optional(z.string()),
+});
+
+export type Question = z.infer<typeof Question>;
+
 export type RawPosition = z.infer<typeof RawPosition>;
 
 export const RawPosition = z.object({
@@ -7,6 +15,7 @@ export const RawPosition = z.object({
   url: z.string(),
   description: z.string(),
   _id: z.string(),
+  questions: z.optional(z.array(Question)),
   type: z.literal("raw"),
 });
 

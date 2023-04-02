@@ -6,7 +6,9 @@ import React from "react";
 import {
   PositionType,
   PositionUpdateObject,
+  Question,
 } from "../../../server/constants/types";
+import { QuestionList } from "./QuestionList";
 
 export type PositionFormData = {
   url?: string;
@@ -19,6 +21,7 @@ export type PositionFormData = {
   city?: string;
   resumeUrl?: string;
   coverLetterUrl?: string;
+  questions?: Question[];
 };
 
 const parseInitialValues = (initialValues?: PositionFormData) => ({
@@ -32,6 +35,7 @@ const parseInitialValues = (initialValues?: PositionFormData) => ({
   city: initialValues?.city || "",
   resumeUrl: initialValues?.resumeUrl || "",
   coverLetterUrl: initialValues?.coverLetterUrl || "",
+  questions: initialValues?.questions || [],
 });
 
 export interface PositionFormProps {
@@ -60,8 +64,13 @@ export const PositionForm: React.FC<PositionFormProps> = ({
   }, [initialValues]);
 
   const handleSubmit = () => {
+    const questions = formData.questions
+      ? formData.questions.filter((question) => Boolean(question.question))
+      : [];
+
     const validationResult = PositionUpdateObject.safeParse({
       ...formData,
+      questions,
       type,
     });
 
@@ -76,6 +85,10 @@ export const PositionForm: React.FC<PositionFormProps> = ({
     HTMLTextAreaElement | HTMLInputElement
   > = (ev) => {
     setFormData((data) => ({ ...data, [ev.target.name]: ev.target.value }));
+  };
+
+  const handleQuestionsChange = (questions: Question[]) => {
+    setFormData((data) => ({ ...data, questions }));
   };
 
   return (
@@ -110,6 +123,13 @@ export const PositionForm: React.FC<PositionFormProps> = ({
         disabled={disabled}
       />
 
+      <Box mb={2}></Box>
+
+      <QuestionList
+        onChange={handleQuestionsChange}
+        questions={formData.questions}
+        disabled={disabled}
+      />
       {initialValues && onParse ? (
         <>
           <Box mb={2}></Box>
