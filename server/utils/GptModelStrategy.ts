@@ -1,7 +1,7 @@
 import { OpenAIApi } from "openai";
 
 const MODELS = ["text-davinci-003", "gpt-3.5-turbo", "gpt-4"] as const;
-export type Model = typeof MODELS[number];
+export type Model = (typeof MODELS)[number];
 
 export abstract class GptModelStrategy {
   public async complete(openAi: OpenAIApi, prompt: string): Promise<string> {

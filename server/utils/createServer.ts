@@ -1,24 +1,29 @@
-import { createHTTPHandler } from "@trpc/server/adapters/standalone";
-import http from "http";
+import * as trpc from "@trpc/server";
+import * as trpcExpress from "@trpc/server/adapters/express";
+import express from "express";
+import cors from "cors";
+
 import { AppRouter } from "..";
 
-export const createServer = (appRouter: AppRouter) => {
-  const handler = createHTTPHandler({
-    router: appRouter,
-    createContext() {
-      return {};
-    },
-  });
+export type Context = trpc.inferAsyncReturnType<typeof createContext>;
 
-  return http.createServer((req, res) => {
-    res.setHeader("Access-Control-Allow-Origin", "*");
-    res.setHeader("Access-Control-Request-Method", "*");
-    res.setHeader("Access-Control-Allow-Methods", "OPTIONS, GET");
-    res.setHeader("Access-Control-Allow-Headers", "*");
-    if (req.method === "OPTIONS") {
-      res.writeHead(200);
-      return res.end();
-    }
-    handler(req, res);
-  });
+// created for each request
+const createContext = ({
+  req,
+  res,
+}: trpcExpress.CreateExpressContextOptions) => ({}); // no context
+
+export const createServer = (appRouter: AppRouter) => {
+  const app = express();
+  app.use(cors());
+
+  app.use(
+    "/",
+    trpcExpress.createExpressMiddleware({
+      router: appRouter,
+      createContext,
+    })
+  );
+
+  return app;
 };
