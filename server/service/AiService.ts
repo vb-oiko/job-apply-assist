@@ -14,6 +14,10 @@ export const JobInfo = z.object({
   city: z.string(),
 });
 
+export const Objective = z.object({
+  objective: z.string(),
+});
+
 export type JobInfo = z.infer<typeof JobInfo>;
 
 export class AiService {
@@ -58,7 +62,15 @@ export class AiService {
       resume,
     });
 
-    return await this.gptModelStrategy.complete(this.openAi, prompt);
+    const text = await this.gptModelStrategy.complete(this.openAi, prompt);
+
+    const validationResult = Objective.safeParse(JSON.parse(text));
+
+    if (!validationResult.success) {
+      throw new Error("Invalid response");
+    }
+
+    return validationResult.data.objective;
   }
 
   public async getCoverLetterText(params: CoverLetterParams): Promise<string> {
