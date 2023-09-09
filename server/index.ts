@@ -10,6 +10,7 @@ import { GDocService } from "./service/GDocService";
 import { PositionService } from "./service/PositionService";
 import { PromptService } from "./service/PromptService";
 import { createServer } from "./utils/createServer";
+import { AuthController } from "./controller/AuthController";
 
 dotenv.config();
 
@@ -49,6 +50,8 @@ const positionController = new PositionController(
   positionService
 );
 
+const authController = new AuthController(trpcInstance);
+
 const router = trpcInstance.router;
 const appRouter = router({
   listPositions: positionController.list(),
@@ -59,6 +62,7 @@ const appRouter = router({
   parsePosition: positionController.parse(),
   generateDocs: positionController.generateDocs(),
   generateAnswer: positionController.generateAnswer(),
+  login: authController.login(),
 });
 
 const server = createServer(appRouter);

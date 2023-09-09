@@ -11,7 +11,7 @@ export type Context = trpc.inferAsyncReturnType<typeof createContext>;
 const createContext = ({
   req,
   res,
-}: trpcExpress.CreateExpressContextOptions) => ({}); // no context
+}: trpcExpress.CreateExpressContextOptions) => ({ req, res });
 
 export const createServer = (appRouter: AppRouter) => {
   const app = express();

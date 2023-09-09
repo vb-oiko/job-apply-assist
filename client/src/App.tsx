@@ -8,14 +8,22 @@ import { trpc } from "./utils/trpc";
 import { PositionCreate } from "./views/PositionCreate";
 import { PositionEdit } from "./views/PositionEdit";
 import { Positions } from "./views/Positions";
+import { Login } from "./views/Login";
+import { AuthProvider, useAuth } from "./components/auth/AuthProvider";
+import { RequireAuth } from "./components/auth/RequireAuth";
 
 export function App() {
+  const auth = useAuth();
   const [queryClient] = useState(() => new QueryClient());
   const [trpcClient] = useState(() =>
     trpc.createClient({
       links: [
         httpBatchLink({
           url: "http://localhost:2022",
+          headers: () =>
+            auth?.accessToken
+              ? { Authorization: `Bearer ${auth?.accessToken}` }
+              : {},
         }),
       ],
     })
@@ -24,15 +32,25 @@ export function App() {
   return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>
-        <Routes>
-          <Route path="/" element={<Layout />}>
-            <Route index element={<Positions />} />
-            <Route path="positions" element={<Positions />} />
-            <Route path="positions/create" element={<PositionCreate />} />
-            <Route path="positions/:id" element={<PositionEdit />} />
-            <Route path="*" element={<NoMatch />} />
-          </Route>
-        </Routes>
+        <AuthProvider>
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <RequireAuth>
+                  <Layout />
+                </RequireAuth>
+              }
+            >
+              <Route index element={<Positions />} />
+              <Route path="positions" element={<Positions />} />
+              <Route path="positions/create" element={<PositionCreate />} />
+              <Route path="positions/:id" element={<PositionEdit />} />
+              <Route path="*" element={<NoMatch />} />
+            </Route>
+            <Route path="login" element={<Login />} />
+          </Routes>
+        </AuthProvider>
       </QueryClientProvider>
     </trpc.Provider>
   );
