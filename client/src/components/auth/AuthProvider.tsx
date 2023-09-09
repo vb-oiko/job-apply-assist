@@ -1,20 +1,14 @@
 import React from "react";
 import { trpc } from "../../utils/trpc";
+import { setToken } from "../../App";
 
 export interface AuthContextType {
   user: any;
   signIn: (user: string, callback?: VoidFunction) => void;
   signOut: (callback?: VoidFunction) => void;
-  accessToken: string | undefined;
 }
 
 const AuthContext = React.createContext<AuthContextType>(null!);
-
-let accessToken: string | undefined;
-
-function setToken(newToken: string) {
-  accessToken = newToken;
-}
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const loginMutation = trpc.login.useMutation({
@@ -40,7 +34,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const value = { user, signIn, signOut, accessToken };
+  const value = { user, signIn, signOut };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

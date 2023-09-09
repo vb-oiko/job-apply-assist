@@ -1,11 +1,9 @@
 import { z } from "zod";
-import { TRPCInstance } from "..";
+import { TRPCInstance, publicProcedure } from "..";
 
 export class AuthController {
-  constructor(private readonly trpcInstance: TRPCInstance) {}
-
   login() {
-    return this.trpcInstance.procedure
+    return publicProcedure
       .input(z.object({}))
       .mutation(async (): Promise<LoginResponse> => {
         return { access_token: "token" };

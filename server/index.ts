@@ -1,4 +1,4 @@
-import { initTRPC } from "@trpc/server";
+import { TRPCError, initTRPC } from "@trpc/server";
 import * as dotenv from "dotenv";
 import { MongoClient, ServerApiVersion } from "mongodb";
 import { Configuration, OpenAIApi } from "openai";
@@ -43,16 +43,36 @@ const positionService = new PositionService(
   promptService
 );
 
-const trpcInstance = initTRPC.create();
+const t = initTRPC.create();
+
+export const middleware = t.middleware;
+export const publicProcedure = t.procedure;
+const router = t.router;
+
+const isAuthenticated = middleware((opts) => {
+  const authHeader = opts.ctx.req.headers.authorization;
+  if (!authHeader) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+
+  const [, token] = authHeader.split(" ");
+
+  if (!token) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+
+  return opts.next();
+});
+
+export const protectedProcedure = publicProcedure.use(isAuthenticated);
+
 const positionController = new PositionController(
-  trpcInstance,
   positionCollection,
   positionService
 );
 
-const authController = new AuthController(trpcInstance);
+const authController = new AuthController();
 
-const router = trpcInstance.router;
 const appRouter = router({
   listPositions: positionController.list(),
   createPosition: positionController.create(),
@@ -70,4 +90,4 @@ const server = createServer(appRouter);
 server.listen(SERVER_PORT);
 
 export type AppRouter = typeof appRouter;
-export type TRPCInstance = typeof trpcInstance;
+export type TRPCInstance = typeof t;

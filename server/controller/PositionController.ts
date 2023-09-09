@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { TRPCInstance } from "..";
+import { protectedProcedure } from "..";
 import { PositionCollection } from "../collection/PositionCollection";
 import {
   Position,
@@ -10,13 +10,12 @@ import { PositionService } from "../service/PositionService";
 
 export default class PositionController {
   constructor(
-    private readonly trpcInstance: TRPCInstance,
     private readonly positionCollection: PositionCollection,
     private readonly positionService: PositionService
   ) {}
 
   list() {
-    return this.trpcInstance.procedure
+    return protectedProcedure
       .input(z.object({}))
       .query(async (): Promise<Position[]> => {
         return await this.positionCollection.listAll();
@@ -24,7 +23,7 @@ export default class PositionController {
   }
 
   create() {
-    return this.trpcInstance.procedure
+    return protectedProcedure
       .input(RawPositionInsertObject)
       .mutation(async ({ input }): Promise<void> => {
         await this.positionService.createAndParse(input);
@@ -32,7 +31,7 @@ export default class PositionController {
   }
 
   delete() {
-    return this.trpcInstance.procedure
+    return protectedProcedure
       .input(z.string())
       .mutation(async ({ input }): Promise<void> => {
         await this.positionCollection.delete(input);
@@ -40,7 +39,7 @@ export default class PositionController {
   }
 
   update() {
-    return this.trpcInstance.procedure
+    return protectedProcedure
       .input(z.object({ id: z.string(), position: PositionUpdateObject }))
       .mutation(async ({ input }): Promise<void> => {
         await this.positionCollection.update(input.id, input.position);
@@ -48,15 +47,15 @@ export default class PositionController {
   }
 
   get() {
-    return this.trpcInstance.procedure
+    return protectedProcedure
       .input(z.string())
-      .query(async ({ input }): Promise<Position | null> => {
+      .query(async ({ ctx, input }): Promise<Position | null> => {
         return this.positionCollection.getById(input);
       });
   }
 
   parse() {
-    return this.trpcInstance.procedure
+    return protectedProcedure
       .input(z.string())
       .mutation(async ({ input }): Promise<void> => {
         await this.positionService.parse(input);
@@ -64,7 +63,7 @@ export default class PositionController {
   }
 
   generateDocs() {
-    return this.trpcInstance.procedure
+    return protectedProcedure
       .input(z.string())
       .mutation(async ({ input }): Promise<void> => {
         await this.positionService.generateDocs(input);
@@ -72,7 +71,7 @@ export default class PositionController {
   }
 
   generateAnswer() {
-    return this.trpcInstance.procedure
+    return protectedProcedure
       .input(z.object({ positionId: z.string(), questionId: z.string() }))
       .mutation(async ({ input }): Promise<void> => {
         await this.positionService.generateAnswer(input);

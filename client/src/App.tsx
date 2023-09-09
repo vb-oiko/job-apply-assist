@@ -12,6 +12,12 @@ import { Login } from "./views/Login";
 import { AuthProvider, useAuth } from "./components/auth/AuthProvider";
 import { RequireAuth } from "./components/auth/RequireAuth";
 
+let accessToken: string | undefined;
+
+export const setToken = (value: string) => {
+  accessToken = value;
+};
+
 export function App() {
   const auth = useAuth();
   const [queryClient] = useState(() => new QueryClient());
@@ -20,10 +26,11 @@ export function App() {
       links: [
         httpBatchLink({
           url: "http://localhost:2022",
-          headers: () =>
-            auth?.accessToken
-              ? { Authorization: `Bearer ${auth?.accessToken}` }
-              : {},
+          headers: () => {
+            return accessToken
+              ? { Authorization: `Bearer ${accessToken}` }
+              : {};
+          },
         }),
       ],
     })
