@@ -1,4 +1,4 @@
-import { OpenAIApi } from "openai";
+import { Configuration, ConfigurationParameters, OpenAIApi } from "openai";
 import { z } from "zod";
 import { GptModelStrategy, TurboStrategy } from "../utils/GptModelStrategy";
 import {
@@ -21,11 +21,15 @@ export const Objective = z.object({
 export type JobInfo = z.infer<typeof JobInfo>;
 
 export class AiService {
+  private openAi: OpenAIApi;
   constructor(
-    private readonly openAi: OpenAIApi,
+    config: ConfigurationParameters,
     private readonly promptService: PromptService,
     private readonly gptModelStrategy: GptModelStrategy = new TurboStrategy()
-  ) {}
+  ) {
+    const openAiConfiguration = new Configuration(config);
+    this.openAi = new OpenAIApi(openAiConfiguration);
+  }
 
   public async extractJobInfo(description: string): Promise<JobInfo> {
     const prompt = await this.promptService.getExtractJobInfoPrompt({

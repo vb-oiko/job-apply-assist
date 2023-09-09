@@ -1,7 +1,6 @@
+import { config } from "./config";
 import { TRPCError, initTRPC } from "@trpc/server";
-import * as dotenv from "dotenv";
 import { MongoClient, ServerApiVersion } from "mongodb";
-import { Configuration, OpenAIApi } from "openai";
 import { PositionCollection } from "./collection/PositionCollection";
 import { SERVER_PORT } from "./constants/constants";
 import PositionController from "./controller/PositionController";
@@ -11,41 +10,24 @@ import { PositionService } from "./service/PositionService";
 import { PromptService } from "./service/PromptService";
 import { createServer } from "./utils/createServer";
 import { AuthController } from "./controller/AuthController";
+import { TrpcContext } from "./constants/types";
 
-dotenv.config();
-
-const mongoClient = new MongoClient(process.env.MONGO_DB_CONNECT_URI!, {
+const mongoClient = new MongoClient(config.mongoDb.connectUri, {
   serverApi: ServerApiVersion.v1,
 });
 mongoClient.connect();
+
 const positionCollection = new PositionCollection(mongoClient);
 
-const openAiConfiguration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 const promptService = new PromptService();
-
-const openai = new OpenAIApi(openAiConfiguration);
-const aiService = new AiService(openai, promptService);
-const gDocService = new GDocService({
-  email: process.env.GOOGLE_CLIENT_EMAIL!,
-  key: process.env.GOOGLE_PRIVATE_KEY!,
-  rootFolderId: process.env.GOOGLE_ROOT_FOLDER_ID!,
-  coverLetterTemplateId: process.env.GOOGLE_COVER_LETTER_TEMPLATE_ID!,
-  resumeTemplateId: process.env.GOOGLE_RESUME_TEMPLATE_ID!,
-});
-
+const aiService = new AiService(config.openai, promptService);
+const gDocService = new GDocService(config.google);
 const positionService = new PositionService(
   positionCollection,
   aiService,
   gDocService,
   promptService
 );
-
-export interface TrpcContext {
-  isAuthenticated: boolean;
-}
 
 const t = initTRPC.context<TrpcContext>().create();
 

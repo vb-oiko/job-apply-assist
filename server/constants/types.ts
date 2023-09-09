@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { GDocServiceConfig } from "../service/GDocService";
+import { ConfigurationParameters } from "openai";
 
 export const Question = z.object({
   id: z.string(),
@@ -77,7 +79,7 @@ export const PROMPTS = [
   "get_reasons",
 ] as const;
 
-export type PromptType = typeof PROMPTS[number];
+export type PromptType = (typeof PROMPTS)[number];
 
 export interface Prompt {
   _id: string;
@@ -87,3 +89,16 @@ export interface Prompt {
 }
 
 export type PromptInsertObject = Omit<Prompt, "_id" | "created">;
+
+export interface TrpcContext {
+  isAuthenticated: boolean;
+}
+
+export interface Config {
+  mongoDb: {
+    connectUri: string;
+  };
+  openai: ConfigurationParameters;
+  google: GDocServiceConfig;
+  jwt: { secret: string };
+}
