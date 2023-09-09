@@ -1,10 +1,11 @@
 import React from "react";
 import { trpc } from "../../utils/trpc";
 import { setToken } from "../../App";
+import { UserCredentials } from "../../../../server/constants/types";
 
 export interface AuthContextType {
-  user: any;
-  signIn: (user: string, callback?: VoidFunction) => void;
+  isAuthenticated: boolean;
+  signIn: (credentials: UserCredentials, callback?: VoidFunction) => void;
   signOut: (callback?: VoidFunction) => void;
 }
 
@@ -14,27 +15,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const loginMutation = trpc.login.useMutation({
     onSuccess(data) {
       setToken(data.access_token);
+      setIsAuthenticated(true);
     },
   });
 
-  const [user, setUser] = React.useState<any>(null);
+  const [isAuthenticated, setIsAuthenticated] = React.useState(false);
 
-  const signIn = (newUser: string, callback?: VoidFunction) => {
-    loginMutation.mutate({});
-    setUser(newUser);
+  const signIn = (credentials: UserCredentials, callback?: VoidFunction) => {
+    loginMutation.mutate(credentials);
     if (callback) {
       callback();
     }
   };
 
   const signOut = (callback?: VoidFunction) => {
-    setUser(null);
+    setIsAuthenticated(false);
     if (callback) {
       callback();
     }
   };
 
-  const value = { user, signIn, signOut };
+  const value = { isAuthenticated, signIn, signOut };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

@@ -1,7 +1,8 @@
 import { Button } from "@mui/material";
 import React from "react";
-import { useAuth } from "../components/auth/AuthProvider";
+import { useAuth } from "../../components/auth/AuthProvider";
 import { useLocation, useNavigate } from "react-router-dom";
+import { LoginForm, LoginFormData } from "./LoginForm";
 
 export const Login = () => {
   const auth = useAuth();
@@ -10,11 +11,11 @@ export const Login = () => {
 
   const from = location.state?.from?.pathname || "/";
 
-  const handleClick = React.useCallback(() => {
-    auth.signIn("user", () => {
+  const handleSubmit = React.useCallback((data: LoginFormData) => {
+    auth.signIn(data, () => {
       navigate(from, { replace: true });
     });
   }, []);
 
-  return <Button onClick={handleClick}>Login</Button>;
+  return <LoginForm onSubmit={handleSubmit} />;
 };

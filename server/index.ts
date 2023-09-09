@@ -11,6 +11,8 @@ import { PromptService } from "./service/PromptService";
 import { createServer } from "./utils/createServer";
 import { AuthController } from "./controller/AuthController";
 import { TrpcContext } from "./constants/types";
+import { AuthService } from "./service/AuthService";
+import { UserCollection } from "./collection/UserCollection";
 
 const mongoClient = new MongoClient(config.mongoDb.connectUri, {
   serverApi: ServerApiVersion.v1,
@@ -18,6 +20,7 @@ const mongoClient = new MongoClient(config.mongoDb.connectUri, {
 mongoClient.connect();
 
 const positionCollection = new PositionCollection(mongoClient);
+const userCollection = new UserCollection(mongoClient);
 
 const promptService = new PromptService();
 const aiService = new AiService(config.openai, promptService);
@@ -28,6 +31,7 @@ const positionService = new PositionService(
   gDocService,
   promptService
 );
+const authService = new AuthService(config.jwt, userCollection);
 
 const t = initTRPC.context<TrpcContext>().create();
 
@@ -36,8 +40,6 @@ export const publicProcedure = t.procedure;
 const router = t.router;
 
 const isAuthenticated = middleware((opts) => {
-  console.warn(opts);
-
   if (!opts.ctx.isAuthenticated) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
@@ -52,7 +54,7 @@ const positionController = new PositionController(
   positionService
 );
 
-const authController = new AuthController();
+const authController = new AuthController(authService);
 
 const appRouter = router({
   listPositions: positionController.list(),
@@ -64,6 +66,7 @@ const appRouter = router({
   generateDocs: positionController.generateDocs(),
   generateAnswer: positionController.generateAnswer(),
   login: authController.login(),
+  signup: authController.signup(),
 });
 
 const server = createServer(appRouter);

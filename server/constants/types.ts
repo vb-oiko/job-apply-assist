@@ -94,11 +94,37 @@ export interface TrpcContext {
   isAuthenticated: boolean;
 }
 
+export interface JwtConfig {
+  secret: string;
+}
+
 export interface Config {
   mongoDb: {
     connectUri: string;
   };
   openai: ConfigurationParameters;
   google: GDocServiceConfig;
-  jwt: { secret: string };
+  jwt: JwtConfig;
 }
+
+export const User = z.object({
+  _id: z.string(),
+  created: z.date(),
+  login: z.string(),
+  hash: z.string(),
+});
+
+export type User = z.infer<typeof User>;
+
+export const UserCredentials = z.object({
+  login: z.string(),
+  password: z.string(),
+});
+
+export type UserCredentials = z.infer<typeof UserCredentials>;
+
+export const JwtData = z.object({
+  userId: z.string(),
+});
+
+export type JwtData = z.infer<typeof JwtData>;

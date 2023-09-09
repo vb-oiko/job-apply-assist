@@ -8,9 +8,10 @@ import { trpc } from "./utils/trpc";
 import { PositionCreate } from "./views/PositionCreate";
 import { PositionEdit } from "./views/PositionEdit";
 import { Positions } from "./views/Positions";
-import { Login } from "./views/Login";
+import { Login } from "./views/Login/Login";
 import { AuthProvider, useAuth } from "./components/auth/AuthProvider";
 import { RequireAuth } from "./components/auth/RequireAuth";
+import { Signup } from "./views/Login/Signup";
 
 let accessToken: string | undefined;
 
@@ -56,6 +57,7 @@ export function App() {
               <Route path="*" element={<NoMatch />} />
             </Route>
             <Route path="login" element={<Login />} />
+            <Route path="signup" element={<Signup />} />
           </Routes>
         </AuthProvider>
       </QueryClientProvider>
