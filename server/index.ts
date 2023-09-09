@@ -43,21 +43,20 @@ const positionService = new PositionService(
   promptService
 );
 
-const t = initTRPC.create();
+export interface TrpcContext {
+  isAuthenticated: boolean;
+}
+
+const t = initTRPC.context<TrpcContext>().create();
 
 export const middleware = t.middleware;
 export const publicProcedure = t.procedure;
 const router = t.router;
 
 const isAuthenticated = middleware((opts) => {
-  const authHeader = opts.ctx.req.headers.authorization;
-  if (!authHeader) {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
-  }
+  console.warn(opts);
 
-  const [, token] = authHeader.split(" ");
-
-  if (!token) {
+  if (!opts.ctx.isAuthenticated) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
 

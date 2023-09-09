@@ -1,29 +1,37 @@
-import * as trpc from "@trpc/server";
-import * as trpcExpress from "@trpc/server/adapters/express";
-import express from "express";
-import cors from "cors";
+import { createHTTPHandler } from "@trpc/server/adapters/standalone";
+import http from "http";
 
-import { AppRouter } from "..";
-
-export type Context = trpc.inferAsyncReturnType<typeof createContext>;
-
-// created for each request
-const createContext = ({
-  req,
-  res,
-}: trpcExpress.CreateExpressContextOptions) => ({ req, res });
+import { AppRouter, TrpcContext } from "..";
 
 export const createServer = (appRouter: AppRouter) => {
-  const app = express();
-  app.use(cors());
+  const handler = createHTTPHandler({
+    router: appRouter,
+    createContext(opts): TrpcContext {
+      const authHeader = opts.req.headers.authorization;
 
-  app.use(
-    "/",
-    trpcExpress.createExpressMiddleware({
-      router: appRouter,
-      createContext,
-    })
-  );
+      if (!authHeader) {
+        return { isAuthenticated: false };
+      }
 
-  return app;
+      const [, token] = authHeader.split(" ");
+
+      if (!token) {
+        return { isAuthenticated: false };
+      }
+
+      return { isAuthenticated: true };
+    },
+  });
+
+  return http.createServer((req, res) => {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Request-Method", "*");
+    res.setHeader("Access-Control-Allow-Methods", "OPTIONS, GET");
+    res.setHeader("Access-Control-Allow-Headers", "*");
+    if (req.method === "OPTIONS") {
+      res.writeHead(200);
+      return res.end();
+    }
+    handler(req, res);
+  });
 };
