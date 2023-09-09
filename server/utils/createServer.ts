@@ -1,10 +1,19 @@
 import { createHTTPHandler } from "@trpc/server/adapters/standalone";
 import http from "http";
+import jsonwebtoken from "jsonwebtoken";
+const { verify } = jsonwebtoken;
 
 import { AppRouter } from "..";
-import { TrpcContext } from "../constants/types";
+import { JwtConfig, JwtData, TrpcContext } from "../constants/types";
+import { z } from "zod";
 
-export const createServer = (appRouter: AppRouter) => {
+const JwtPayload = z.object({
+  data: JwtData,
+});
+
+type JwtPayload = z.infer<typeof JwtPayload>;
+
+export const createServer = (appRouter: AppRouter, jwtConfig: JwtConfig) => {
   const handler = createHTTPHandler({
     router: appRouter,
     createContext(opts): TrpcContext {
@@ -20,7 +29,16 @@ export const createServer = (appRouter: AppRouter) => {
         return { isAuthenticated: false };
       }
 
-      return { isAuthenticated: true };
+      try {
+        const payload = verify(token, jwtConfig.secret, { complete: false });
+        const jwtPayload = JwtPayload.safeParse(payload);
+
+        if (jwtPayload.success) {
+          return { isAuthenticated: true };
+        }
+      } catch (error) {}
+
+      return { isAuthenticated: false };
     },
   });
 

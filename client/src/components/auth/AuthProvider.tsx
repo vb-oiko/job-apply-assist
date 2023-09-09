@@ -12,20 +12,20 @@ export interface AuthContextType {
 const AuthContext = React.createContext<AuthContextType>(null!);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const loginMutation = trpc.login.useMutation({
-    onSuccess(data) {
-      setToken(data.access_token);
-      setIsAuthenticated(true);
-    },
-  });
-
   const [isAuthenticated, setIsAuthenticated] = React.useState(false);
 
+  const loginMutation = trpc.login.useMutation();
+
   const signIn = (credentials: UserCredentials, callback?: VoidFunction) => {
-    loginMutation.mutate(credentials);
-    if (callback) {
-      callback();
-    }
+    loginMutation.mutate(credentials, {
+      onSuccess(data) {
+        setToken(data.access_token);
+        setIsAuthenticated(true);
+        if (callback) {
+          callback();
+        }
+      },
+    });
   };
 
   const signOut = (callback?: VoidFunction) => {

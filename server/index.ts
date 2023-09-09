@@ -69,7 +69,7 @@ const appRouter = router({
   signup: authController.signup(),
 });
 
-const server = createServer(appRouter);
+const server = createServer(appRouter, config.jwt);
 
 server.listen(SERVER_PORT);
 
