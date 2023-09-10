@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - client/**
+  workflow_dispatch:
 
 jobs:
   build:
@@ -18,8 +19,8 @@ jobs:
     steps:
       - uses: actions/checkout@v1
       - run: ls -a
-  #    - run: printf ${{ secrets.ENV_FILE_CONTENT }} > ./cleint/.env
-  #    - run: cat ./cleint/.env
+      - run: printf ${{ secrets.ENV_FILE_CONTENT }} > cleint/.env
+      - run: cat ./cleint/.env
   #     - run: npm i
   #     - run: npm run build
   #     - uses: actions/upload-artifact@v3
