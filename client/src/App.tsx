@@ -9,7 +9,7 @@ import { PositionCreate } from "./views/PositionCreate";
 import { PositionEdit } from "./views/PositionEdit";
 import { Positions } from "./views/Positions";
 import { Login } from "./views/Login/Login";
-import { AuthProvider, useAuth } from "./components/auth/AuthProvider";
+import { AuthProvider } from "./components/auth/AuthProvider";
 import { RequireAuth } from "./components/auth/RequireAuth";
 import { Signup } from "./views/Login/Signup";
 
@@ -22,7 +22,6 @@ export const setToken = (value: string) => {
 };
 
 export function App() {
-  const auth = useAuth();
   const [queryClient] = useState(() => new QueryClient());
   const [trpcClient] = useState(() =>
     trpc.createClient({
