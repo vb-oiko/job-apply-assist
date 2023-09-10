@@ -17,27 +17,28 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
-      - run: printf ${{ secrets.ENV_FILE_CONTENT }} > .env
-      - run: npm i
-      - run: npm run build
-      - uses: actions/upload-artifact@v3
-        with:
-          name: dist-build
-          path: client/dist
-          retention-days: 1
+      - run: printf ${{ secrets.ENV_FILE_CONTENT }} > ./cleint/.env
+      - run: cat ./cleint/.env
+  #     - run: npm i
+  #     - run: npm run build
+  #     - uses: actions/upload-artifact@v3
+  #       with:
+  #         name: dist-build
+  #         path: client/dist
+  #         retention-days: 1
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@v3
-        with:
-          name: dist-build
-      - uses: jakejarvis/s3-sync-action@master
-        with:
-          args: --acl public-read --follow-symlinks --delete
-        env:
-          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: "eu-central-1"
+  # deploy:
+  #   needs: build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/download-artifact@v3
+  #       with:
+  #         name: dist-build
+  #     - uses: jakejarvis/s3-sync-action@master
+  #       with:
+  #         args: --acl public-read --follow-symlinks --delete
+  #       env:
+  #         AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+  #         AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  #         AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  #         AWS_REGION: "eu-central-1"
