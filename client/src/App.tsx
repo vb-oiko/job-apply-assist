@@ -13,6 +13,8 @@ import { AuthProvider, useAuth } from "./components/auth/AuthProvider";
 import { RequireAuth } from "./components/auth/RequireAuth";
 import { Signup } from "./views/Login/Signup";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 let accessToken: string | undefined;
 
 export const setToken = (value: string) => {
@@ -26,7 +28,7 @@ export function App() {
     trpc.createClient({
       links: [
         httpBatchLink({
-          url: "http://localhost:2022",
+          url: API_BASE_URL,
           headers: () => {
             return accessToken
               ? { Authorization: `Bearer ${accessToken}` }
