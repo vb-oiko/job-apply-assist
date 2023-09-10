@@ -18,9 +18,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
+      - run: cd client
       - run: ls -a
-      - run: printf ${{ secrets.ENV_FILE_CONTENT }} > cleint/.env
-      - run: cat ./cleint/.env
+      - run: printf ${{ secrets.ENV_FILE_CONTENT }} > .env
+      - run: cat .env
+      - run: cd ..
   #     - run: npm i
   #     - run: npm run build
   #     - uses: actions/upload-artifact@v3
