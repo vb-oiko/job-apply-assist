@@ -23,6 +23,7 @@ export const setToken = (value: string) => {
 
 export function App() {
   const [queryClient] = useState(() => new QueryClient());
+
   const [trpcClient] = useState(() =>
     trpc.createClient({
       links: [
