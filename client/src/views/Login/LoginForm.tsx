@@ -1,4 +1,4 @@
-import { Box, Button, TextField } from "@mui/material";
+import { Box, Button, Card, Paper, TextField } from "@mui/material";
 import React from "react";
 import { z } from "zod";
 
@@ -60,55 +60,67 @@ export const LoginForm: React.FC<LoginFormProps> = ({
   }, [type]);
 
   return (
-    <>
-      <TextField
-        required
-        autoFocus
-        margin="dense"
-        id="login"
-        name="login"
-        label="login"
-        type="text"
-        variant="outlined"
-        value={formData.login}
-        onChange={handleChange}
-      />
-
-      <Box mb={2}></Box>
-
-      <TextField
-        required
-        margin="dense"
-        id="password"
-        name="password"
-        label="password"
-        type="password"
-        variant="outlined"
-        value={formData.password}
-        onChange={handleChange}
-      />
-
-      <Box mb={2}></Box>
-
-      {type === "signup" ? (
-        <>
+    <Box width="20rem" mx="auto" mt={20}>
+      <Paper>
+        <Box p={4}>
           <TextField
+            fullWidth
             required
+            autoFocus
             margin="dense"
-            id="repeatPassword"
-            name="repeatPassword"
-            label="repeat password"
-            type="password"
+            id="login"
+            name="login"
+            label="login"
+            type="text"
             variant="outlined"
-            value={formData.repeatPassword}
+            value={formData.login}
             onChange={handleChange}
           />
 
           <Box mb={2}></Box>
-        </>
-      ) : null}
 
-      <Button onClick={handleSubmit}>{buttonText}</Button>
-    </>
+          <TextField
+            fullWidth
+            required
+            margin="dense"
+            id="password"
+            name="password"
+            label="password"
+            type="password"
+            variant="outlined"
+            value={formData.password}
+            onChange={handleChange}
+          />
+
+          <Box mb={2}></Box>
+
+          {type === "signup" ? (
+            <>
+              <TextField
+                fullWidth
+                required
+                margin="dense"
+                id="repeatPassword"
+                name="repeatPassword"
+                label="repeat password"
+                type="password"
+                variant="outlined"
+                value={formData.repeatPassword}
+                onChange={handleChange}
+              />
+
+              <Box mb={2}></Box>
+            </>
+          ) : null}
+
+          <Box mt={3} display="flex">
+            <Box mt={3} ml="auto" />
+            <Button onClick={handleSubmit} variant="outlined">
+              {buttonText}
+            </Button>
+          </Box>
+        </Box>
+      </Paper>
+    </Box>
   );
 };
