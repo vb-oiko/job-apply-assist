@@ -13,7 +13,10 @@ import { AuthProvider } from "./components/auth/AuthProvider";
 import { RequireAuth } from "./components/auth/RequireAuth";
 import { Signup } from "./views/Login/Signup";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL =
+  import.meta.env.MODE === "production"
+    ? "https://api.job-apply.vboiko.me"
+    : "http://localhost:2022";
 
 let accessToken: string | undefined;
 
