@@ -15,9 +15,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
-      - run: yarn
-      - run: yarn build
+      - run: npm i
+      - run: npm run build
+
   deploy:
+    needs: build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@master
