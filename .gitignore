@@ -4,3 +4,4 @@ node_modules
 temp
 .cron.lock
 prompts
+server/dist
