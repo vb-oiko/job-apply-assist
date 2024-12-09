@@ -19,6 +19,7 @@ export const RawPosition = z.object({
   _id: z.string(),
   questions: z.optional(z.array(Question)),
   type: z.literal("raw"),
+  userId: z.string(),
 });
 
 export type ParsedPosition = z.infer<typeof ParsedPosition>;
@@ -90,9 +91,10 @@ export interface Prompt {
 
 export type PromptInsertObject = Omit<Prompt, "_id" | "created">;
 
-export interface TrpcContext {
+export type TrpcContext = {
   isAuthenticated: boolean;
-}
+  userId?: string;
+};
 
 export interface JwtConfig {
   secret: string;

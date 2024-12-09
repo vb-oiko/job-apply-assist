@@ -16,29 +16,34 @@ export class PositionCollection {
       .collection<Position>(COLLECTIONS.positions);
   }
 
-  public async listAll(): Promise<Position[]> {
-    return await this.collection.find({}).toArray();
+  public async listAll(userId: string): Promise<Position[]> {
+    return await this.collection.find({ userId }).toArray();
   }
 
-  public async insert(position: RawPositionInsertObject) {
+  public async insert(position: RawPositionInsertObject, userId: string) {
     const result = await this.collection.insertOne({
       ...position,
       created: new Date(),
       _id: nanoid(),
+      userId,
     });
 
     return result.insertedId;
   }
 
-  public async getById(id: string): Promise<Position | null> {
-    return this.collection.findOne({ _id: id });
+  public async getById(id: string, userId: string): Promise<Position | null> {
+    return this.collection.findOne({ _id: id, userId });
   }
 
-  public async update(id: string, position: PositionUpdateObject) {
-    await this.collection.updateOne({ _id: id }, { $set: position });
+  public async update(
+    id: string,
+    position: PositionUpdateObject,
+    userId: string
+  ) {
+    await this.collection.updateOne({ _id: id, userId }, { $set: position });
   }
 
-  public async delete(id: string) {
-    await this.collection.deleteOne({ _id: id });
+  public async delete(id: string, userId: string) {
+    await this.collection.deleteOne({ _id: id, userId });
   }
 }

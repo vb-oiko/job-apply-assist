@@ -34,7 +34,7 @@ export const createServer = (appRouter: AppRouter, jwtConfig: JwtConfig) => {
         const jwtPayload = JwtPayload.safeParse(payload);
 
         if (jwtPayload.success) {
-          return { isAuthenticated: true };
+          return { isAuthenticated: true, userId: jwtPayload.data.data.userId };
         }
       } catch (error) {}
 

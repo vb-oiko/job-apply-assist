@@ -12,8 +12,8 @@ export class PositionService {
     private readonly promptService: PromptService
   ) {}
 
-  public async parse(positionId: string) {
-    const position = await this.getPositionOrFail(positionId);
+  public async parse(positionId: string, userId: string) {
+    const position = await this.getPositionOrFail(positionId, userId);
 
     const { _id: id, url, description } = position;
 
@@ -25,22 +25,26 @@ export class PositionService {
 
     const name = await this.promptService.getName();
 
-    await this.positionCollection.update(id, {
-      type: "parsed",
-      url,
-      description,
-      title,
-      company,
-      reasons,
-      matchingPoints,
-      city,
-      name,
-      objective,
-    });
+    await this.positionCollection.update(
+      id,
+      {
+        type: "parsed",
+        url,
+        description,
+        title,
+        company,
+        reasons,
+        matchingPoints,
+        city,
+        name,
+        objective,
+      },
+      userId
+    );
   }
 
-  public async generateDocs(positionId: string) {
-    const position = await this.getPositionOrFail(positionId);
+  public async generateDocs(positionId: string, userId: string) {
+    const position = await this.getPositionOrFail(positionId, userId);
 
     if (position.type === "raw") {
       throw new Error("Position not parsed");
@@ -66,15 +70,19 @@ export class PositionService {
         objective,
       });
 
-    await this.positionCollection.update(positionId, {
-      type: "generated",
-      resumeUrl,
-      coverLetterUrl,
-    });
+    await this.positionCollection.update(
+      positionId,
+      {
+        type: "generated",
+        resumeUrl,
+        coverLetterUrl,
+      },
+      userId
+    );
   }
 
-  private async getPositionOrFail(positionId: string) {
-    const position = await this.positionCollection.getById(positionId);
+  private async getPositionOrFail(positionId: string, userId: string) {
+    const position = await this.positionCollection.getById(positionId, userId);
 
     if (!position) {
       throw new Error("Position not found");
@@ -83,22 +91,31 @@ export class PositionService {
     return position;
   }
 
-  public async createAndParse(position: RawPositionInsertObject) {
-    const positionId = await this.positionCollection.insert({
-      ...position,
-    });
+  public async createAndParse(
+    position: RawPositionInsertObject,
+    userId: string
+  ) {
+    const positionId = await this.positionCollection.insert(
+      {
+        ...position,
+      },
+      userId
+    );
 
-    await this.parse(positionId);
+    await this.parse(positionId, userId);
   }
 
-  public async generateAnswer({
-    positionId,
-    questionId,
-  }: {
-    positionId: string;
-    questionId: string;
-  }) {
-    const position = await this.getPositionOrFail(positionId);
+  public async generateAnswer(
+    {
+      positionId,
+      questionId,
+    }: {
+      positionId: string;
+      questionId: string;
+    },
+    userId: string
+  ) {
+    const position = await this.getPositionOrFail(positionId, userId);
 
     const { questions, description } = position;
 
@@ -114,11 +131,15 @@ export class PositionService {
       resume: await this.promptService.getResume(),
     });
 
-    await this.positionCollection.update(positionId, {
-      ...position,
-      questions: questions?.map((question) =>
-        question.id === questionId ? { ...question, answer } : question
-      ),
-    });
+    await this.positionCollection.update(
+      positionId,
+      {
+        ...position,
+        questions: questions?.map((question) =>
+          question.id === questionId ? { ...question, answer } : question
+        ),
+      },
+      userId
+    );
   }
 }
