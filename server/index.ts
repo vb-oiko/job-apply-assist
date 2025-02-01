@@ -8,21 +8,32 @@ import { AiService } from "./service/AiService";
 import { GDocService } from "./service/GDocService";
 import { PositionService } from "./service/PositionService";
 import { PromptService } from "./service/PromptService";
+import { PromptCollection } from "./collection/PromptCollection";
 import { createServer } from "./utils/createServer";
 import { AuthController } from "./controller/AuthController";
 import { TrpcContext } from "./constants/types";
 import { AuthService } from "./service/AuthService";
 import { UserCollection } from "./collection/UserCollection";
+import { exit } from "process";
 
 const mongoClient = new MongoClient(config.mongoDb.connectUri, {
   serverApi: ServerApiVersion.v1,
 });
-mongoClient.connect();
+mongoClient
+  .connect()
+  .then(() => {
+    console.log("Successfully connected to DB");
+  })
+  .catch((err) => {
+    console.log("Failed to connect to DB: ", err);
+    exit(1);
+  });
 
 const positionCollection = new PositionCollection(mongoClient);
 const userCollection = new UserCollection(mongoClient);
+const promptCollection = new PromptCollection(mongoClient);
 
-const promptService = new PromptService();
+const promptService = new PromptService(promptCollection);
 const aiService = new AiService(config.openai, promptService);
 const gDocService = new GDocService(config.google);
 const positionService = new PositionService(

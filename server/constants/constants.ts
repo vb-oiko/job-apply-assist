@@ -7,3 +7,15 @@ export enum COLLECTIONS {
   positions = "positions",
   users = "users",
 }
+
+export const PROMPTS = {
+  EXTRACT_JOB_INFO: "extract_job_info",
+  GET_MATCHING_POINTS: "get_matching_points",
+  GET_OBJECTIVE: "get_objective",
+  GET_COVER_LETTER: "get_cover_letter",
+  RESUME: "resume",
+  NAME: "name",
+  ADDITIONAL_QUESTION: "additional_question",
+} as const;
+
+export type PromptType = typeof PROMPTS[keyof typeof PROMPTS];

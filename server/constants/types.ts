@@ -1,6 +1,8 @@
 import { z } from "zod";
 import { GDocServiceConfig } from "../service/GDocService";
 import { ConfigurationParameters } from "openai";
+import { ObjectId } from "mongodb";
+import { PromptType, PROMPTS } from "./constants";
 
 export const Question = z.object({
   id: z.string(),
@@ -57,6 +59,7 @@ export type Position = z.infer<typeof Position>;
 export const RawPositionInsertObject = RawPosition.omit({
   _id: true,
   created: true,
+  userId: true,
 });
 
 export type RawPositionInsertObject = z.infer<typeof RawPositionInsertObject>;
@@ -73,23 +76,15 @@ export type PositionUpdateObject = z.infer<typeof PositionUpdateObject>;
 
 export type PositionType = "raw" | "parsed" | "generated";
 
-export const PROMPTS = [
-  "generate_cover_letter",
-  "extract_job_title_and_position",
-  "get_matching_points",
-  "get_reasons",
-] as const;
+export const Prompt = z.object({
+  _id: z.string(),
+  created: z.date(),
+  type: z.enum(Object.values(PROMPTS) as [string, ...string[]]),
+  prompt: z.string(),
+  updated: z.date().optional(),
+});
 
-export type PromptType = (typeof PROMPTS)[number];
-
-export interface Prompt {
-  _id: string;
-  created: Date;
-  type: PromptType;
-  prompt: string;
-}
-
-export type PromptInsertObject = Omit<Prompt, "_id" | "created">;
+export type Prompt = z.infer<typeof Prompt>;
 
 export type TrpcContext = {
   isAuthenticated: boolean;

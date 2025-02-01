@@ -1,17 +1,6 @@
-import path from "path";
-import fs from "fs";
-
-const PROMPT_FILE_PATH = "./prompts";
-
-enum PromptType {
-  EXTRACT_JOB_INFO = "extract_job_info",
-  GET_MATCHING_POINTS = "get_matching_points",
-  GET_OBJECTIVE = "get_objective",
-  GET_COVER_LETTER = "get_cover_letter",
-  RESUME = "resume",
-  NAME = "name",
-  ADDITIONAL_QUESTION = "additional_question",
-}
+import { PromptCollection } from "../collection/PromptCollection";
+import { PROMPTS } from "../constants/constants";
+import type { PromptType } from "../constants/constants";
 
 export interface CoverLetterParams extends Record<string, string> {
   title: string;
@@ -41,79 +30,64 @@ export interface AdditionalQuestionParams extends Record<string, string> {
 }
 
 export class PromptService {
-  private baseDir: string;
-
-  constructor() {
-    this.baseDir = path.resolve(PROMPT_FILE_PATH);
-  }
+  constructor(private readonly promptCollection: PromptCollection) {}
 
   private async getPrompt(promptType: PromptType): Promise<string> {
-    return new Promise<string>((resolve) => {
-      const filePath = path.resolve(this.baseDir, promptType);
-
-      fs.readFile(`${filePath}.txt`, "utf8", (err, fileContent) => {
-        if (err) {
-          throw err;
-        }
-
-        resolve(fileContent);
-      });
-    });
+    const prompt = await this.promptCollection.getByType(promptType);
+    if (!prompt) {
+      throw new Error(`Prompt not found: ${promptType}`);
+    }
+    return prompt;
   }
 
-  private insertValuesIntoPrompt(
-    prompt: string,
-    values: Record<string, string>
-  ) {
+  private insertValuesIntoPrompt(prompt: string, values: Record<string, string>) {
     let result = prompt;
-
     Object.entries(values).forEach(([key, value]) => {
       result = result.replaceAll(`{${key}}`, value);
     });
-
     return result;
   }
 
   public async getExtractJobInfoPrompt(params: JobDescriptionParams) {
     return this.insertValuesIntoPrompt(
-      await this.getPrompt(PromptType.EXTRACT_JOB_INFO),
+      await this.getPrompt(PROMPTS.EXTRACT_JOB_INFO),
       params
     );
   }
 
   public async getMatchingPointsPrompt(params: MatchingPointsParams) {
     return this.insertValuesIntoPrompt(
-      await this.getPrompt(PromptType.GET_MATCHING_POINTS),
+      await this.getPrompt(PROMPTS.GET_MATCHING_POINTS),
       params
     );
   }
 
   public async getObjectivePrompt(params: ObjectiveParams) {
     return this.insertValuesIntoPrompt(
-      await this.getPrompt(PromptType.GET_OBJECTIVE),
+      await this.getPrompt(PROMPTS.GET_OBJECTIVE),
       params
     );
   }
 
   public async getAdditionalQuestionPrompt(params: AdditionalQuestionParams) {
     return this.insertValuesIntoPrompt(
-      await this.getPrompt(PromptType.ADDITIONAL_QUESTION),
+      await this.getPrompt(PROMPTS.ADDITIONAL_QUESTION),
       params
     );
   }
 
   public async getCoverLetterPrompt(params: CoverLetterParams) {
     return this.insertValuesIntoPrompt(
-      await this.getPrompt(PromptType.GET_COVER_LETTER),
+      await this.getPrompt(PROMPTS.GET_COVER_LETTER),
       { ...params, name: await this.getName() }
     );
   }
 
   public async getResume() {
-    return this.getPrompt(PromptType.RESUME);
+    return this.getPrompt(PROMPTS.RESUME);
   }
 
   public async getName() {
-    return this.getPrompt(PromptType.NAME);
+    return this.getPrompt(PROMPTS.NAME);
   }
 }
