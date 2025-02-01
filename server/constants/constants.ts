@@ -2,11 +2,13 @@ export const SERVER_PORT = 2022;
 
 export const DB_NAME = "job_apply_assist";
 
-export enum COLLECTIONS {
-  prompts = "prompts",
-  positions = "positions",
-  users = "users",
-}
+export const COLLECTIONS = {
+  PROMPTS: "prompts",
+  POSITIONS: "positions",
+  USERS: "users",
+} as const;
+
+export type CollectionName = typeof COLLECTIONS[keyof typeof COLLECTIONS];
 
 export const PROMPTS = {
   EXTRACT_JOB_INFO: "extract_job_info",

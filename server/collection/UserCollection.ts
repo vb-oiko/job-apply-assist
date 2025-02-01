@@ -9,14 +9,14 @@ export class UserCollection {
   constructor(private readonly mongoClient: MongoClient) {
     this.collection = this.mongoClient
       .db(DB_NAME)
-      .collection<User>(COLLECTIONS.users);
+      .collection<User>(COLLECTIONS.USERS);
   }
 
   public async listAll(): Promise<User[]> {
     return await this.collection.find({}).toArray();
   }
 
-  public async insert(user: Omit<User, "_id" | "created">) {
+  public async insert(user: Omit<User, "_id" | "created">): Promise<string> {
     const result = await this.collection.insertOne({
       ...user,
       created: new Date(),
@@ -30,7 +30,7 @@ export class UserCollection {
     return this.collection.findOne({ _id: id });
   }
 
-  public async getByLogin(login: string): Promise<User | null> {
+  public async findByLogin(login: string): Promise<User | null> {
     return this.collection.findOne({ login });
   }
 

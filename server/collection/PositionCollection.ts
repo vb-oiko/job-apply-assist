@@ -13,7 +13,7 @@ export class PositionCollection {
   constructor(private readonly mongoClient: MongoClient) {
     this.collection = this.mongoClient
       .db(DB_NAME)
-      .collection<Position>(COLLECTIONS.positions);
+      .collection<Position>(COLLECTIONS.POSITIONS);
   }
 
   public async listAll(userId: string): Promise<Position[]> {

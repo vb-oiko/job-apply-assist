@@ -9,7 +9,7 @@ export class PromptCollection {
   constructor(private readonly mongoClient: MongoClient) {
     this.collection = this.mongoClient
       .db(DB_NAME)
-      .collection<Prompt>(COLLECTIONS.prompts);
+      .collection<Prompt>(COLLECTIONS.PROMPTS);
   }
 
   public async getByType(type: PromptType): Promise<string | null> {
