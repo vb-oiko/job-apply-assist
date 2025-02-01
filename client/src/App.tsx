@@ -14,6 +14,7 @@ import { RequireAuth } from "./components/auth/RequireAuth";
 import { Signup } from "./views/Login/Signup";
 import { Home } from "./views/Home";
 import { AUTH_TOKEN_KEY } from "./constants/constants";
+import { ROUTES } from "./navigation/routes";
 
 const API_BASE_URL =
   import.meta.env.MODE === "production"
@@ -36,7 +37,9 @@ export function App() {
         httpBatchLink({
           url: API_BASE_URL,
           headers: () => {
-            return accessToken ? { Authorization: `Bearer ${accessToken}` } : {};
+            return accessToken
+              ? { Authorization: `Bearer ${accessToken}` }
+              : {};
           },
         }),
       ],
@@ -48,12 +51,15 @@ export function App() {
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <Routes>
-            <Route path="/" element={<Layout />}>
+            <Route path={ROUTES.HOME} element={<Layout />}>
               <Route index element={<Home />} />
+              <Route path={ROUTES.LOGIN} element={<Login />} />
+              <Route path={ROUTES.SIGNUP} element={<Signup />} />
+              <Route path="*" element={<NoMatch />} />
             </Route>
 
             <Route
-              path="/"
+              path={ROUTES.HOME}
               element={
                 <RequireAuth>
                   <Layout />
@@ -61,14 +67,16 @@ export function App() {
               }
             >
               <Route index element={<Home />} />
-              {/* <Route index element={<Positions />} /> */}
-              <Route path="positions" element={<Positions />} />
-              <Route path="positions/create" element={<PositionCreate />} />
-              <Route path="positions/:id" element={<PositionEdit />} />
-              <Route path="*" element={<NoMatch />} />
+              <Route path={ROUTES.POSITIONS.LIST} element={<Positions />} />
+              <Route
+                path={ROUTES.POSITIONS.CREATE}
+                element={<PositionCreate />}
+              />
+              <Route
+                path={ROUTES.POSITIONS.EDIT(":id")}
+                element={<PositionEdit />}
+              />
             </Route>
-            <Route path="login" element={<Login />} />
-            <Route path="signup" element={<Signup />} />
           </Routes>
         </AuthProvider>
       </QueryClientProvider>

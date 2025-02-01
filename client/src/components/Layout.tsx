@@ -5,17 +5,19 @@ import Container from "@mui/material/Container";
 import CssBaseline from "@mui/material/CssBaseline";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import { Link as RouterLink, Outlet, useNavigate } from "react-router-dom";
+import { Link as RouterLink, Outlet } from "react-router-dom";
 import { useAuth } from "./auth/AuthProvider";
 import React from "react";
+import { useNavigation } from "../navigation/useNavigation";
+import { ROUTES } from "../navigation/routes";
 
 export const Layout = () => {
   const { isAuthenticated, signOut } = useAuth();
-  const navigate = useNavigate();
+  const navigation = useNavigation();
 
   const handleLogout = React.useCallback(() => {
-    signOut(() => navigate("/"));
-  }, [signOut, navigate]);
+    signOut(() => navigation.toHome());
+  }, [signOut, navigation]);
 
   return (
     <>
@@ -37,7 +39,7 @@ export const Layout = () => {
                       color="inherit"
                       variant="text"
                       component={RouterLink}
-                      to="/positions"
+                      to={ROUTES.POSITIONS.LIST}
                     >
                       Positions
                     </Button>
@@ -54,7 +56,7 @@ export const Layout = () => {
                     color="inherit"
                     variant="text"
                     component={RouterLink}
-                    to="/login"
+                    to={ROUTES.LOGIN}
                   >
                     Login
                   </Button>
