@@ -2,6 +2,7 @@ import React from "react";
 import { trpc } from "../../utils/trpc";
 import { setToken } from "../../App";
 import { UserCredentials } from "../../../../server/constants/types";
+import { AUTH_TOKEN_KEY } from "../../constants/constants";
 
 export interface AuthContextType {
   isAuthenticated: boolean;
@@ -12,30 +13,39 @@ export interface AuthContextType {
 const AuthContext = React.createContext<AuthContextType>(null!);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [isAuthenticated, setIsAuthenticated] = React.useState(false);
+  const [isAuthenticated, setIsAuthenticated] = React.useState(
+    localStorage.getItem(AUTH_TOKEN_KEY) !== null
+  );
 
   const loginMutation = trpc.login.useMutation();
 
-  const signIn = (credentials: UserCredentials, callback?: VoidFunction) => {
-    loginMutation.mutate(credentials, {
-      onSuccess(data) {
-        setToken(data.access_token);
-        setIsAuthenticated(true);
-        if (callback) {
-          callback();
-        }
-      },
-    });
-  };
+  const signIn = React.useCallback(
+    (credentials: UserCredentials, callback?: VoidFunction) => {
+      loginMutation.mutate(credentials, {
+        onSuccess(data) {
+          setToken(data.access_token);
+          setIsAuthenticated(true);
+          if (callback) {
+            callback();
+          }
+        },
+      });
+    },
+    []
+  );
 
-  const signOut = (callback?: VoidFunction) => {
+  const signOut = React.useCallback((callback?: VoidFunction) => {
+    localStorage.removeItem(AUTH_TOKEN_KEY);
     setIsAuthenticated(false);
     if (callback) {
       callback();
     }
-  };
+  }, []);
 
-  const value = { isAuthenticated, signIn, signOut };
+  const value = React.useMemo(
+    () => ({ isAuthenticated, signIn, signOut }),
+    [isAuthenticated, signIn, signOut]
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

@@ -12,15 +12,18 @@ import { Login } from "./views/Login/Login";
 import { AuthProvider } from "./components/auth/AuthProvider";
 import { RequireAuth } from "./components/auth/RequireAuth";
 import { Signup } from "./views/Login/Signup";
+import { Home } from "./views/Home";
+import { AUTH_TOKEN_KEY } from "./constants/constants";
 
 const API_BASE_URL =
   import.meta.env.MODE === "production"
     ? "https://api.job-apply.vboiko.me"
     : "http://localhost:2022";
 
-let accessToken: string | undefined;
+let accessToken: string | null = localStorage.getItem(AUTH_TOKEN_KEY);
 
 export const setToken = (value: string) => {
+  localStorage.setItem(AUTH_TOKEN_KEY, value);
   accessToken = value;
 };
 
@@ -33,9 +36,7 @@ export function App() {
         httpBatchLink({
           url: API_BASE_URL,
           headers: () => {
-            return accessToken
-              ? { Authorization: `Bearer ${accessToken}` }
-              : {};
+            return accessToken ? { Authorization: `Bearer ${accessToken}` } : {};
           },
         }),
       ],
@@ -47,6 +48,10 @@ export function App() {
       <QueryClientProvider client={queryClient}>
         <AuthProvider>
           <Routes>
+            <Route path="/" element={<Layout />}>
+              <Route index element={<Home />} />
+            </Route>
+
             <Route
               path="/"
               element={
@@ -55,7 +60,8 @@ export function App() {
                 </RequireAuth>
               }
             >
-              <Route index element={<Positions />} />
+              <Route index element={<Home />} />
+              {/* <Route index element={<Positions />} /> */}
               <Route path="positions" element={<Positions />} />
               <Route path="positions/create" element={<PositionCreate />} />
               <Route path="positions/:id" element={<PositionEdit />} />
