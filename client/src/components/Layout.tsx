@@ -54,7 +54,7 @@ export const Layout = () => {
                     color="inherit"
                     variant="text"
                     component={RouterLink}
-                    to="/app/login"
+                    to="/login"
                   >
                     Login
                   </Button>
