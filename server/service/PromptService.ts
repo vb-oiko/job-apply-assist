@@ -2,10 +2,10 @@ import { PromptCollection } from "../collection/PromptCollection";
 import { PROMPTS } from "../constants/constants";
 import type { PromptType } from "../constants/constants";
 
-export interface CoverLetterParams extends Record<string, string> {
+export interface CoverLetterParams extends Record<string, string | string[]> {
   title: string;
   company: string;
-  reasons: string;
+  reasons: string[];
   matchingPoints: string;
 }
 
@@ -40,10 +40,16 @@ export class PromptService {
     return prompt;
   }
 
-  private insertValuesIntoPrompt(prompt: string, values: Record<string, string>) {
+  private insertValuesIntoPrompt(
+    prompt: string,
+    values: Record<string, string | string[]>
+  ) {
     let result = prompt;
     Object.entries(values).forEach(([key, value]) => {
-      result = result.replaceAll(`{${key}}`, value);
+      result = result.replaceAll(
+        `{${key}}`,
+        Array.isArray(value) ? value.join("\n") : value
+      );
     });
     return result;
   }

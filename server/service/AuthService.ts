@@ -15,7 +15,7 @@ export class AuthService {
   ) {}
 
   public async signUp({ login, password }: UserCredentials) {
-    const user = await this.userCollection.getByLogin(login);
+    const user = await this.userCollection.findByLogin(login);
 
     if (user) {
       throw new TRPCError({
@@ -30,7 +30,7 @@ export class AuthService {
   }
 
   public async signIn({ login, password }: UserCredentials) {
-    const user = await this.userCollection.getByLogin(login);
+    const user = await this.userCollection.findByLogin(login);
 
     if (!user) {
       throw new TRPCError({

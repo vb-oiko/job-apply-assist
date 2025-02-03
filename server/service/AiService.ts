@@ -10,7 +10,7 @@ import {
 export const JobInfo = z.object({
   title: z.string(),
   company: z.string(),
-  reasons: z.string(),
+  reasons: z.array(z.string()),
   city: z.string(),
 });
 
@@ -41,6 +41,10 @@ export class AiService {
     const validationResult = JobInfo.safeParse(JSON.parse(text));
 
     if (!validationResult.success) {
+      console.warn(
+        "AI response validation error",
+        validationResult.error.errors
+      );
       throw new Error("Invalid response");
     }
 
@@ -67,10 +71,15 @@ export class AiService {
     });
 
     const text = await this.gptModelStrategy.complete(this.openAi, prompt);
+    console.warn({ prompt, text });
 
     const validationResult = Objective.safeParse(JSON.parse(text));
 
     if (!validationResult.success) {
+      console.warn(
+        "AI response validation error:",
+        validationResult.error.errors
+      );
       throw new Error("Invalid response");
     }
 
